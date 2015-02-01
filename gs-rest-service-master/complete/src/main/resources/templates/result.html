@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vysledek akce</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+	<h1>Vysledek akce <span th:text="${method}"></span></h1>
+        <p>Byla zavolana metoda <span th:text="${method}"></span>
+            na akci s id
+            <span th:text="${action.id}"></span></p>
+        
+    <p th:if="${method} == put" th:text="'Nazev akce: ' + ${action.name}" />
+    <a href="/rudolf">Odeslat dalsi prikaz!</a>
+</body>
+</html>

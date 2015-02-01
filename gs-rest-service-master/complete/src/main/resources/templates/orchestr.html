@@ -1,0 +1,99 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Orchestr</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+        form
+        {
+            margin-bottom: 40px;
+        }
+    </style>
+
+</head>
+    <body>
+        <h1>Orchestr - nová akce (CPAction [POST])</h1>
+        <p>Toto je pomocný formulář, který bude simulovat zasílání dat o nové akci v systému Orchestr mezilehlé komponentě (IMC).</p>
+        <form action="#" th:action="@{/orchestr}" method="post">
+            <table>
+                <tr>
+                    <td>Id</td>
+                    <td><input type="text" th:value="${id}" name="id" /></td>
+                </tr>
+                
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text"  th:value="${name}" name="name" /></td>
+                </tr>
+                
+                <tr>
+                    <td>Place</td>
+                    <td><input type="text"  th:value="${place}" name="place" /></td>
+                </tr>
+                <tr>
+                    <td>Category</td>
+                    <td><input type="text"  th:value="${category}" name="category" /></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><input type="text"  th:value="${description}" name="description" /></td>
+                </tr>
+                <tr>
+                    <td>Players</td>
+                    <td><input type="text"  th:value="${players}" name="players" /></td>
+                </tr>
+                <tr>
+                    <td>Cycle</td>
+                    <td><input type="text"  th:value="${cycle}" name="cycle" /></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Create new action!" /></td>
+                    <td></td>
+                </tr>
+            </table>
+        </form>
+        
+        
+        <h1>Orchestr - změna existující akce (CPAction [PUT])</h1>
+        <p>Toto je pomocný formulář, který simuluje zasílání změněných dat o akci v systému Orchestr mezilehlé komponentě (IMC).</p>
+        <form action="#" th:action="@{/orchestr/put}" method="post">
+            <table>
+                <tr>
+                    <td>Id</td>
+                    <td><input type="text" th:value="${id}" name="id" /></td>
+                </tr>
+                
+                <tr>
+                    <td>Name</td>
+                    <td><input type="text"  th:value="${name}" name="name" /></td>
+                </tr>
+                
+                <tr>
+                    <td>Place</td>
+                    <td><input type="text"  th:value="${place}" name="place" /></td>
+                </tr>
+                <tr>
+                    <td>Category</td>
+                    <td><input type="text"  th:value="${category}" name="category" /></td>
+                </tr>
+                <tr>
+                    <td>Description</td>
+                    <td><input type="text"  th:value="${description}" name="description" /></td>
+                </tr>
+                <tr>
+                    <td>Players</td>
+                    <td><input type="text"  th:value="${players}" name="players" /></td>
+                </tr>
+                <tr>
+                    <td>Cycle</td>
+                    <td><input type="text"  th:value="${cycle}" name="cycle" /></td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Create new action!" /></td>
+                    <td></td>
+                </tr>
+            </table>
+        </form>
+        
+    </body>
+</html>

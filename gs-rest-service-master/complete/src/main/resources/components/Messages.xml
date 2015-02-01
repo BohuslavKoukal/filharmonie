@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This document describes communication flow among systems.
+    Content of the communication is described in APIary API draft.
+-->
+
+
+<component>
+    
+    <resource name="CPAction">
+            <action name="POST">
+                <source>
+                    <name>orchestr</name>
+                </source>    
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                    <condition>If collision occurs in Rudolf</condition>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>orchestr</name>
+                </source>
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                </target>
+            </action>
+    </resource>
+    
+    <resource name="ExternalAction">
+            <action name="POST">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                    <condition>If collision occurs in Rudolf</condition>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                </target>
+            </action>
+    </resource>
+    
+    <resource name="Item">
+            <action name="POST">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                    <condition>Will be defined later</condition>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                    <condition>Will be defined later</condition>
+                </target>
+            </action>
+
+            <action name="DELETE">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                    <condition>Will be defined later</condition>
+                </target>
+            </action>        
+    </resource>
+    
+    
+    <resource name="Tickets">
+            <action name="PUT">
+                <source>
+                    <name>ticketing</name>
+                </source>
+                <target>
+                    <name>web</name>
+                    <condition>If amount of available tickets reaches defined percentage or amount</condition>
+                </target>
+            </action>
+    </resource>
+    
+</component>
