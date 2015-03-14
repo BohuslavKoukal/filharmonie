@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This document describes communication flow among systems.
+    Content of the communication is described in APIary API draft.
+-->
+
+
+<component>
+    
+    <server>http://localhost:8085</server>
+    
+    <resource name="CPAction">
+            <action name="POST">
+                <source>
+                    <name>orchestr</name>
+                </source>    
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>orchestr</name>
+                </source>
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+            </action>
+    </resource>
+    
+    
+    
+</component>
