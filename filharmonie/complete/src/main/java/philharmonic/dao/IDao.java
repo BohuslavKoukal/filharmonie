@@ -14,8 +14,9 @@ import philharmonic.model.MappedEntity;
 @Repository
 public interface IDao {
 
-  void create(MappedEntity entity);
-  
-  MappedEntity get(int id, String componentName, String tableName);
+    void create(MappedEntity entity, String tableName);
 
+    MappedEntity get(int id, String tableName, String componentName);
+
+    void delete(int id, String tableName, String componentName);
 }

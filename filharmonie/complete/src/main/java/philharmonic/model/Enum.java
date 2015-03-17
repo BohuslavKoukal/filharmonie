@@ -12,9 +12,10 @@ public class Enum {
     private String propertyName;
     private String tableName;
 
-    public Enum(String propertyName, String tableName) {
-        this.propertyName = propertyName;
+    public Enum(String tableName, String propertyName) {
         this.tableName = tableName;
+        this.propertyName = propertyName;
+        
     }
 
     public Enum() {

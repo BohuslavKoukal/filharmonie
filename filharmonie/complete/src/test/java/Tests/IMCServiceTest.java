@@ -50,36 +50,46 @@ public class IMCServiceTest {
     @Test
     public void saveMappedResource_validArguments_DAOCreateCalled() throws Exception {
         MappedResource mr = new MappedResource();
-        testee.saveMappedResource(mr);
-        verify(daoMock, times(1)).create(mr);
+        testee.saveMappedResource(mr, "name");
+        verify(daoMock, times(1)).create(mr, "name");
     }
     
     @Test(expected=IllegalArgumentException.class)
     public void saveMappedResource_null_ThrowsException() throws Exception {
-        testee.saveMappedResource(null);
+        testee.saveMappedResource(null, "name");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void saveMappedResource_emptyResourceName_ThrowsException() throws Exception {
+        testee.saveMappedResource(new MappedResource(), "");
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void saveMappedResource_nullName_ThrowsException() throws Exception {
+        testee.saveMappedResource(new MappedResource(), null);
     }
     
     @Test
     public void getMappedEntity_validData_DAOGetCalled() throws Exception {
-        testee.getMappedEntity(12, "componentName", "tableName");
-        verify(daoMock, times(1)).get(12, "componentName", "tableName");
+        testee.getMappedEntity(12, "tableName", "componentName");
+        verify(daoMock, times(1)).get(12, "tableName", "componentName");
     }
     
     @Test
     public void getMappedEntity_idIs0_DAOGetNotCalledAndReturnsNull() throws Exception {
-        testee.getMappedEntity(0, "componentName", "tableName");
-        verify(daoMock, times(0)).get(anyInt(), anyString(), anyString());
-    }
-    
-    @Test
-    public void getMappedEntity_componentNameEmpty_DAOGetNotCalledAndReturnsNull() throws Exception {
-        testee.getMappedEntity(12, "", "tableName");
+        testee.getMappedEntity(0, "tableName", "componentName");
         verify(daoMock, times(0)).get(anyInt(), anyString(), anyString());
     }
     
     @Test
     public void getMappedEntity_tableNameEmpty_DAOGetNotCalledAndReturnsNull() throws Exception {
-        testee.getMappedEntity(12, "componentName", null);
+        testee.getMappedEntity(12, "", "componentName");
+        verify(daoMock, times(0)).get(anyInt(), anyString(), anyString());
+    }
+    
+    @Test
+    public void getMappedEntity_componentNameEmpty_DAOGetNotCalledAndReturnsNull() throws Exception {
+        testee.getMappedEntity(12, "tableName", null);
         verify(daoMock, times(0)).get(anyInt(), anyString(), anyString());
     }
     

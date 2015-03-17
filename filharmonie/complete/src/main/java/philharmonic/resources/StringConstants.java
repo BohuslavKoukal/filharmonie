@@ -30,14 +30,14 @@ public class StringConstants {
     public static final String rudolfComponentName = "rudolf";
     public static final String rudolfComponentIdName = "idRudolf";
     
-    //public static final String ticketingComponentName = "ticketing";
-    //public static final String ticketingComponentIdName = "idTicketing";
+    public static final String ticketingComponentName = "ticketing";
+    public static final String ticketingComponentIdName = "idTicketing";
     
     // Component addressing
     public static final String addressMiddleComponent = "/" + middleComponentName;
     public static final String addressOrchestrComponent = "/" + orchestrComponentName;
     public static final String addressRudolfComponent = "/" + rudolfComponentName;
-    //public static final String addressTicketingComponent = "/" + ticketingComponentName;
+    public static final String addressTicketingComponent = "/" + ticketingComponentName;
     
     // Intersystem mapping components
     public static final List<Component> getMappedComponents() {
@@ -45,7 +45,7 @@ public class StringConstants {
             {
                 add(new Component(orchestrComponentName, orchestrComponentIdName));
                 add(new Component(rudolfComponentName, rudolfComponentIdName));
-                //add(new Component(ticketingComponentName, ticketingComponentIdName));
+                add(new Component(ticketingComponentName, ticketingComponentIdName));
             }
         };
     }
@@ -53,12 +53,13 @@ public class StringConstants {
     
     // Resource names    
     public static final String resourceNameCPAction = "CPAction";
+    public static final String resourceNameItem = "Item";
     
     // Resource addressing  
     public static final String resourceAddressCPAction = "/" + resourceNameCPAction;
+    public static final String resourceAddressItem = "/" + resourceNameItem;
     
     // Server address
-    //public static final String serverAddress = "http://localhost:8085";
     public static final String serverAddress = getAddress();
     private static String getAddress() {
         try {
@@ -75,5 +76,6 @@ public class StringConstants {
     // REST actions names
     public static final String namePUTAction = "PUT";
     public static final String namePOSTAction = "POST";
+    public static final String nameDELETEAction = "DELETE";
     
 }

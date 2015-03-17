@@ -22,8 +22,8 @@ public class MappedEntityIdResolver {
                 return entity.idOrchestr;
             case rudolfComponentName:
                 return entity.idRudolf;
-            //case ticketingComponentName:
-             //   return entity.idTicketing;
+            case ticketingComponentName:
+                return entity.idTicketing;
         }
         return 0;
     }
@@ -39,9 +39,9 @@ public class MappedEntityIdResolver {
             case rudolfComponentName:
                 entity.idRudolf = id;
                 break;
-            //case ticketingComponentName:
-            //    entity.idTicketing = id;
-             //   break;
+            case ticketingComponentName:
+                entity.idTicketing = id;
+                break;
         }
     }
     
@@ -53,8 +53,8 @@ public class MappedEntityIdResolver {
                 return orchestrComponentIdName;
             case rudolfComponentName:
                 return rudolfComponentIdName;
-            //case ticketingComponentName:
-              //  return ticketingComponentIdName;
+            case ticketingComponentName:
+                return ticketingComponentIdName;
         }
         return "";
     }

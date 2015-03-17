@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import philharmonic.model.MappedEntity;
 import static philharmonic.resources.StringConstants.*;
+import philharmonic.resources.mapping.EnumMapping;
 import philharmonic.service.IMCService;
 import philharmonic.utilities.JsonUtil;
 
@@ -64,7 +65,7 @@ public class JsonUtilTest {
 
     @Test
     public void nullResourceId_returnsJSONwithId0() throws JSONException {
-        String nulled = testee.nullResourceIdInJSON(JSON);
+        String nulled = testee.nullResourceIdInJSON(JSON, "id");
         JSONObject jo = new JSONObject(nulled);
         int idValue = jo.getInt("id");
         assertSame(0, idValue);
@@ -107,7 +108,8 @@ public class JsonUtilTest {
                 .thenReturn(me1);
         when(serviceMock.getMappedEntity(eq(3), anyString(), anyString()))
                 .thenReturn(me2);
-        String shifted = testee.shiftEnumIdsInJSON(JSON, orchestrComponentName, rudolfComponentName);
+        String shifted = testee.shiftEnumIdsInJSON(JSON, EnumMapping.CPAction.getName(),
+                orchestrComponentName, rudolfComponentName);
         assertSame(122, new JSONObject(shifted).getInt("placeId"));
         assertSame(32, new JSONObject(shifted).getInt("categoryId"));
         assertSame(0, new JSONObject(shifted).getInt("cycleId"));

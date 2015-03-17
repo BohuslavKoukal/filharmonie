@@ -7,6 +7,7 @@ package philharmonic.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import philharmonic.dao.IDao;
+import philharmonic.model.Component;
 import philharmonic.model.MappedEntity;
 import philharmonic.model.MappedResource;
 
@@ -30,12 +31,15 @@ public class IMCService {
     }
     
     
-    public void saveMappedResource(MappedResource resource) {
-        if(resource == null) {
+    public void saveMappedResource(MappedEntity entity, String resourceName) {
+        if(entity == null) {
             throw new IllegalArgumentException("MappedResource to save in db was null.");
         }
-            
-        dao.create(resource);
+        if(resourceName == null)
+            throw new IllegalArgumentException("Name of resource(table) to save in db was null.");
+        if(resourceName.isEmpty())
+            throw new IllegalArgumentException("Name of resource(table) to save in db was empty.");
+        dao.create(entity, resourceName);
     }
     
     
@@ -45,16 +49,26 @@ public class IMCService {
      * if there are no entities, returns null
      */
      
-    public MappedEntity getMappedEntity(int id, String componentName, String tableName) {
-        if(id == 0 || componentName == null || tableName == null)
+    public MappedEntity getMappedEntity(int id, String resourceTableName, String componentName) {
+        if(id == 0)
             return null;
-        if(componentName.isEmpty() || tableName.isEmpty())
+        if(resourceTableName == null || componentName == null)
             return null;
-        return dao.get(id, componentName, tableName);
-        
+        if(resourceTableName.isEmpty() || componentName.isEmpty())
+            return null;
+        return dao.get(id, resourceTableName, componentName);        
     }
     
-   
+   public void deleteEntity(int id, String resourceTableName, String componentName) {
+        if(id == 0)
+            return;
+        if(resourceTableName == null || componentName == null)
+            return;
+        if(resourceTableName.isEmpty() || componentName.isEmpty())
+            return;
+        dao.delete(id, resourceTableName, componentName);
+        
+    }
     
     
 }

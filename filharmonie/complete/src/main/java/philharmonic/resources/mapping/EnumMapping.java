@@ -8,27 +8,44 @@ package philharmonic.resources.mapping;
 import java.util.ArrayList;
 import java.util.List;
 import philharmonic.model.Enum;
+import philharmonic.model.Resource;
 
 /**
  *
  * @author Kookie
  */
-public class CPActionEnumMapping {
-    // mapped properties
-    public static final Enum CPAction = new Enum("id", "CPAction");
-    
-    public static final Enum place = new Enum("placeId", "EnumPlace");
-    public static final Enum category = new Enum("categoryId", "EnumCategory");
-    public static final Enum cycle = new Enum("cycleId", "EnumCycle");
+public class EnumMapping {
+
+    // mapped properties    
+    public static final Enum place = new Enum("EnumPlace", "placeId");
+    public static final Enum category = new Enum("EnumCategory", "categoryId");
+    public static final Enum cycle = new Enum("EnumCycle", "cycleId");
+    public static final Enum itemSubject = new Enum("EnumItemSubject", "itemSubjectId");
+
+    public static final Resource CPAction = new Resource("CPAction", "id");
+    public static final Resource Item = new Resource("Item", "id");
 
     // Intersystem mapping enums
-    public static List<Enum> getMappedEnums() {
-        return new ArrayList<Enum>() {
-            {
-                add(place);
-                add(category);
-                add(cycle);
-            }
-        };
+    public static List<Enum> getMappedEnums(String resourceName) {
+
+        switch (resourceName) {
+            case "CPAction":
+                return new ArrayList<Enum>() {
+                    {
+                        add(place);
+                        add(category);
+                        add(cycle);
+                    }
+                };
+            case "Item":
+                return new ArrayList<Enum>() {
+                    {
+                        add(itemSubject);
+                    }
+                };
+        }
+        return new ArrayList();
+
     }
+
 }

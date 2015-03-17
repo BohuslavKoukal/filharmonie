@@ -13,8 +13,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import philharmonic.model.MappedEntity;
 import philharmonic.model.Enum;
-import static philharmonic.resources.mapping.CPActionEnumMapping.CPAction;
-import static philharmonic.resources.mapping.CPActionEnumMapping.getMappedEnums;
+import static philharmonic.resources.mapping.EnumMapping.*;
 import philharmonic.service.IMCService;
 
 /**
@@ -42,16 +41,16 @@ public class JsonUtil {
      * return changed JSON
      */
     public String shiftResourceIdsInJSON(String originalJSON, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
-        int sourceId = mapper.readTree(originalJSON).findValue(CPAction.getPropertyName()).asInt();
-        MappedEntity entity = service.getMappedEntity(sourceId, sourceComponentName, CPAction.getTableName());
+        int sourceId = mapper.readTree(originalJSON).findValue(CPAction.getIdName()).asInt();
+        MappedEntity entity = service.getMappedEntity(sourceId, CPAction.getName(), sourceComponentName);
         JSONObject jo = new JSONObject(originalJSON);
-        jo.remove(CPAction.getPropertyName());
+        jo.remove(CPAction.getIdName());
         if (entity == null) {
-            jo.put(CPAction.getPropertyName(), 0);            
+            jo.put(CPAction.getIdName(), 0);            
         }
         else {
             int targetId = resolver.getIdValue(entity, targetComponentName);
-            jo.put(CPAction.getPropertyName(), targetId);
+            jo.put(CPAction.getIdName(), targetId);
         }
         return jo.toString();
     }
@@ -62,9 +61,9 @@ public class JsonUtil {
      * remove original enum ID from JSON and put there ID of enum in targetComponent instead
      * return changed JSON
      */
-    public String shiftEnumIdsInJSON(String originalJSON, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
+    public String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
         JSONObject jo = new JSONObject(originalJSON);
-        for (Enum property : getMappedEnums()) {
+        for (Enum property : getMappedEnums(resourceName)) {
             JsonNode stringId = mapper.readTree(originalJSON).findValue(property.getPropertyName());
             if(stringId == null) {
                 jo.put(property.getPropertyName(), 0);
@@ -88,10 +87,10 @@ public class JsonUtil {
      * Remove original ID from JSON and put there ID 0 instead
      * return changed JSON
      */
-    public String nullResourceIdInJSON(String originalJSON) throws JSONException {
+    public String nullResourceIdInJSON(String originalJSON, String resourceIdName) throws JSONException {
         JSONObject jo = new JSONObject(originalJSON);
-        jo.remove(CPAction.getPropertyName());
-        jo.put(CPAction.getPropertyName(), 0);
+        jo.remove(resourceIdName);
+        jo.put(resourceIdName, 0);
         return jo.toString();
     }
     

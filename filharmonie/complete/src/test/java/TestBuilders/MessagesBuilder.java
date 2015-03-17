@@ -25,21 +25,51 @@ public class MessagesBuilder {
         return new Message(action, resourceName, targetComponentName, neededIds);
     }
     
-    public List<Message> buildSampleMessages(String action) {
-        List<Message> messages = new ArrayList<Message>();
-        // will be send two messages - to ticketing and to web
+    public List<Message> buildSampleMessages(String resource, String action) {
+        switch(resource) {
+            case ("CPAction"):
+                return buildSampleMessagesForCPAction(action);
+            case ("Item"):
+                return buildSampleMessagesForItem(action);
+        }
+        return null;
+    }
+    
+    private List<Message> buildSampleMessagesForCPAction(String action) {
+        List<Message> messages = new ArrayList<>();
+        // will be sending two messages - to rudolf and to orchestr
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(null)
                 .withResourceName(resourceNameCPAction)
                 .withTargetComponentName(rudolfComponentName)
                 .build());
-        List<String> neededIds = new ArrayList<String>();
+        List<String> neededIds = new ArrayList<>();
         neededIds.add(rudolfComponentName);
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(neededIds)
                 .withResourceName(resourceNameCPAction)
+                .withTargetComponentName(orchestrComponentName)
+                .build());
+        return messages;
+    }
+    
+    private List<Message> buildSampleMessagesForItem(String action) {
+        List<Message> messages = new ArrayList<>();
+        // will be sending two messages - to ticketing and to orchestr
+        messages.add(new MessagesBuilder()
+                .withAction(action)
+                .withNeededIds(null)
+                .withResourceName(resourceNameItem)
+                .withTargetComponentName(ticketingComponentName)
+                .build());
+        List<String> neededIds = new ArrayList<>();
+        neededIds.add(ticketingComponentName);
+        messages.add(new MessagesBuilder()
+                .withAction(action)
+                .withNeededIds(neededIds)
+                .withResourceName(resourceNameItem)
                 .withTargetComponentName(orchestrComponentName)
                 .build());
         return messages;

@@ -32,7 +32,7 @@ public class IDaoImpl implements IDao {
     }
 
     @Override
-    public void create(MappedEntity entity) {
+    public void create(MappedEntity entity, String tableName) {
 
         String idNames = "";
         for (Component c : getMappedComponents()) {
@@ -54,23 +54,34 @@ public class IDaoImpl implements IDao {
                 idValues += ", ";
             }
         }
-        jt.update("INSERT INTO CPAction (" + idNames + ")"
+        jt.update("INSERT INTO " + tableName + "(" + idNames + ")"
                 + " VALUES(" + idValues + ")");
     }
 
     @Override
-    public MappedEntity get(int id, String componentName, String tableName) {
-        String sqlQuery = createSelectQueryFor(id, componentName, tableName);
+    public MappedEntity get(int id, String tableName, String componentName) {
+        String sqlQuery = createSelectQueryFor(id, tableName, componentName);
         List<MappedEntity> rows = jt.query(sqlQuery, new EntityRowMapper());
         if (!rows.isEmpty()) {
             return (MappedEntity) rows.get(0);
         }
         return null;
     }
+    
+    @Override
+    public void delete(int id, String tableName, String componentName) {
+        String sqlQuery = createDeleteQueryFor(id, tableName, componentName);
+        jt.query(sqlQuery, new EntityRowMapper());
+    }
 
-    private String createSelectQueryFor(int id, String componentName, String tableName) {
+    private String createSelectQueryFor(int id, String tableName, String componentName) {
         String idName = resolver.getIdName(componentName);
         return "SELECT * FROM " + tableName + " WHERE " + idName + " = " + id;
+    }
+
+    private String createDeleteQueryFor(int id, String tableName, String componentName) {
+        String idName = resolver.getIdName(componentName);
+        return "DELETE FROM " + tableName + " WHERE " + idName + " = " + id;
     }
 
 }
