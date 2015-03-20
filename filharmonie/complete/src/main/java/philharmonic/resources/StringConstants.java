@@ -52,12 +52,14 @@ public class StringConstants {
     
     
     // Resource names    
-    public static final String resourceNameCPAction = "CPAction";
-    public static final String resourceNameItem = "Item";
+    public static final String CPAction = "CPAction";
+    public static final String Item = "Item";
+    
+    public static final String idName = "id";
     
     // Resource addressing  
-    public static final String resourceAddressCPAction = "/" + resourceNameCPAction;
-    public static final String resourceAddressItem = "/" + resourceNameItem;
+    public static final String resourceAddressCPAction = "/" + CPAction;
+    public static final String resourceAddressItem = "/" + Item;
     
     // Server address
     public static final String serverAddress = getAddress();

@@ -22,9 +22,6 @@ public class EnumMapping {
     public static final Enum cycle = new Enum("EnumCycle", "cycleId");
     public static final Enum itemSubject = new Enum("EnumItemSubject", "itemSubjectId");
 
-    public static final Resource CPAction = new Resource("CPAction", "id");
-    public static final Resource Item = new Resource("Item", "id");
-
     // Intersystem mapping enums
     public static List<Enum> getMappedEnums(String resourceName) {
 

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import philharmonic.model.MappedEntity;
 import philharmonic.model.Enum;
 import static philharmonic.resources.mapping.EnumMapping.*;
+import static philharmonic.resources.StringConstants.*;
 import philharmonic.service.IMCService;
 
 /**
@@ -40,17 +41,17 @@ public class JsonUtil {
      * remove original ID from JSON and put there ID of targetComponent instead
      * return changed JSON
      */
-    public String shiftResourceIdsInJSON(String originalJSON, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
-        int sourceId = mapper.readTree(originalJSON).findValue(CPAction.getIdName()).asInt();
-        MappedEntity entity = service.getMappedEntity(sourceId, CPAction.getName(), sourceComponentName);
+    public String shiftResourceIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
+        int sourceId = mapper.readTree(originalJSON).findValue(idName).asInt();
+        MappedEntity entity = service.getMappedEntity(sourceId, resourceName, sourceComponentName);
         JSONObject jo = new JSONObject(originalJSON);
-        jo.remove(CPAction.getIdName());
+        jo.remove(idName);
         if (entity == null) {
-            jo.put(CPAction.getIdName(), 0);            
+            jo.put(idName, 0);            
         }
         else {
             int targetId = resolver.getIdValue(entity, targetComponentName);
-            jo.put(CPAction.getIdName(), targetId);
+            jo.put(idName, targetId);
         }
         return jo.toString();
     }

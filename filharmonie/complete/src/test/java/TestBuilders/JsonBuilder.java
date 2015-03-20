@@ -7,6 +7,7 @@ package TestBuilders;
 import org.json.JSONException;
 import org.json.JSONObject;
 import static philharmonic.resources.mapping.EnumMapping.*;
+import static philharmonic.resources.StringConstants.*;
 
 /**
  *
@@ -36,9 +37,9 @@ public class JsonBuilder {
 
     public String build(String resource) {
         switch(resource) {
-            case("CPAction"):
+            case(CPAction):
                 return buildCPAction();
-            case("Item"):
+            case(Item):
                 return buildItem();
         }
         return "";
@@ -48,7 +49,7 @@ public class JsonBuilder {
     private String buildCPAction() {
         try {
             JSONObject jo = new JSONObject();
-            jo.put(CPAction.getIdName(), id);
+            jo.put(idName, id);
             jo.put(place.getPropertyName(), placeId);
             jo.put(category.getPropertyName(), categoryId);
             jo.put(cycle.getPropertyName(), cycleId);
@@ -61,7 +62,7 @@ public class JsonBuilder {
     private String buildItem() {
         try {
             JSONObject jo = new JSONObject();
-            jo.put(Item.getIdName(), id);
+            jo.put(idName, id);
             jo.put(itemSubject.getPropertyName(), itemSubjectId);
             return jo.toString();
         } catch (Exception e) {

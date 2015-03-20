@@ -27,9 +27,9 @@ public class MessagesBuilder {
     
     public List<Message> buildSampleMessages(String resource, String action) {
         switch(resource) {
-            case ("CPAction"):
+            case (CPAction):
                 return buildSampleMessagesForCPAction(action);
-            case ("Item"):
+            case (Item):
                 return buildSampleMessagesForItem(action);
         }
         return null;
@@ -41,7 +41,7 @@ public class MessagesBuilder {
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(null)
-                .withResourceName(resourceNameCPAction)
+                .withResourceName(CPAction)
                 .withTargetComponentName(rudolfComponentName)
                 .build());
         List<String> neededIds = new ArrayList<>();
@@ -49,7 +49,7 @@ public class MessagesBuilder {
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(neededIds)
-                .withResourceName(resourceNameCPAction)
+                .withResourceName(CPAction)
                 .withTargetComponentName(orchestrComponentName)
                 .build());
         return messages;
@@ -61,7 +61,7 @@ public class MessagesBuilder {
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(null)
-                .withResourceName(resourceNameItem)
+                .withResourceName(Item)
                 .withTargetComponentName(ticketingComponentName)
                 .build());
         List<String> neededIds = new ArrayList<>();
@@ -69,7 +69,7 @@ public class MessagesBuilder {
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(neededIds)
-                .withResourceName(resourceNameItem)
+                .withResourceName(Item)
                 .withTargetComponentName(orchestrComponentName)
                 .build());
         return messages;

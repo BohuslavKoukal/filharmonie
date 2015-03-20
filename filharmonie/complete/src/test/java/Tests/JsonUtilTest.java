@@ -77,7 +77,7 @@ public class JsonUtilTest {
         me.id = 12; me.idOrchestr = 12; me.idRudolf = 12;
         when(serviceMock.getMappedEntity(eq(1), anyString(), anyString()))
                 .thenReturn(me);
-        String shifted = testee.shiftResourceIdsInJSON(JSON, orchestrComponentName, rudolfComponentName);
+        String shifted = testee.shiftResourceIdsInJSON(JSON, CPAction, orchestrComponentName, rudolfComponentName);
         JSONObject jo = new JSONObject(shifted);
         int idValue = jo.getInt("id");
         assertSame(12, idValue);
@@ -108,7 +108,7 @@ public class JsonUtilTest {
                 .thenReturn(me1);
         when(serviceMock.getMappedEntity(eq(3), anyString(), anyString()))
                 .thenReturn(me2);
-        String shifted = testee.shiftEnumIdsInJSON(JSON, EnumMapping.CPAction.getName(),
+        String shifted = testee.shiftEnumIdsInJSON(JSON, CPAction,
                 orchestrComponentName, rudolfComponentName);
         assertSame(122, new JSONObject(shifted).getInt("placeId"));
         assertSame(32, new JSONObject(shifted).getInt("categoryId"));

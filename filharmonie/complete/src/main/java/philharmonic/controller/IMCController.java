@@ -71,24 +71,24 @@ public class IMCController {
         try {
             validate(actionJSON);
             String sourceName = orchestrComponentName;
-            Resource resource = CPAction;
-            List<Message> messages = parseMessages(resourceNameCPAction, namePOSTAction);
+            String resource = CPAction;
+            List<Message> messages = parseMessages(resource, namePOSTAction);
             // new resource that will be saved
             MappedResource resourceToSave = new MappedResource();
-            int idToSet = mapper.readTree(actionJSON).findValue(CPAction.getIdName()).asInt();
+            int idToSet = mapper.readTree(actionJSON).findValue(idName).asInt();
             if (idToSet == 0) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            if (entityExists(actionJSON, CPAction, sourceName)) {
+            if (entityExists(actionJSON, resource, sourceName)) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
             resolver.setId(resourceToSave, idToSet, sourceName);
 
             for (Message message : messages) {
                 // shifting enum ids
-                String jsonToSend = shiftEnumIdsInJSON(actionJSON, resource.getName(), sourceName, message.getTargetComponentName());
+                String jsonToSend = shiftEnumIdsInJSON(actionJSON, resource, sourceName, message.getTargetComponentName());
                 // resource id will be 0
-                jsonToSend = nullResourceIdInJSON(jsonToSend, resource.getIdName());
+                jsonToSend = nullResourceIdInJSON(jsonToSend, idName);
                 // adds ids of this entity in other systems if specified in config xml file
                 jsonToSend = addNeededIds(resourceToSave, message, jsonToSend);
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
@@ -103,14 +103,14 @@ public class IMCController {
                 if (response != null && response.getStatusCode().equals(HttpStatus.OK)) {
                     String responseJson = response.getBody();
                     if (responseJson != null) {
-                        int returnedId = mapper.readTree(responseJson).findValue(CPAction.getIdName()).asInt();
+                        int returnedId = mapper.readTree(responseJson).findValue(idName).asInt();
                         resolver.setId(resourceToSave, returnedId, message.getTargetComponentName());
                     }
                 } else {
                     handleError(response);
                 }
             }
-            saveMappedResource(resourceToSave, resource.getName());
+            saveMappedResource(resourceToSave, resource);
             if (errorHolder.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.CREATED);
             } else {
@@ -130,17 +130,17 @@ public class IMCController {
     public ResponseEntity<String> putCPAction(@RequestBody String actionJSON) throws IOException, JSONException {
         logger.debug(invokingCPActionPUT + actionJSON);
         String sourceName = orchestrComponentName;
-        Resource resource = CPAction;
+        String resource = CPAction;
         try {
             validate(actionJSON);
             // Hack -  because they dont want to resolve new/existing actions in component wrappers
-            if (!entityExists(actionJSON, CPAction, sourceName)) {
+            if (!entityExists(actionJSON, resource, sourceName)) {
                 return postCPAction(actionJSON);
             }
-            List<Message> messages = parseMessages(resourceNameCPAction, namePUTAction);
+            List<Message> messages = parseMessages(resource, namePUTAction);
             for (Message message : messages) {
-                String jsonToSend = shiftResourceIdsInJSON(actionJSON, sourceName, message.getTargetComponentName());
-                jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource.getName(), sourceName, message.getTargetComponentName());
+                String jsonToSend = shiftResourceIdsInJSON(actionJSON, resource, sourceName, message.getTargetComponentName());
+                jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource, sourceName, message.getTargetComponentName());
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
                 try {
                     response = sendMessage(message, jsonToSend);
@@ -173,17 +173,17 @@ public class IMCController {
     public ResponseEntity<String> putItem(@RequestBody String itemJSON) {
         logger.debug(invokingItemPUT + itemJSON);
         String sourceName = rudolfComponentName;
-        Resource resource = Item;
+        String resource = Item;
         try {
             validate(itemJSON);
             // Hack -  because they dont want to resolve new/existing actions in component wrappers
-            if (!entityExists(itemJSON, Item, sourceName)) {
+            if (!entityExists(itemJSON, resource, sourceName)) {
                 return postItem(itemJSON);
             }
-            List<Message> messages = parseMessages(resourceNameItem, namePUTAction);
+            List<Message> messages = parseMessages(resource, namePUTAction);
             for (Message message : messages) {
-                String jsonToSend = shiftResourceIdsInJSON(itemJSON, sourceName, message.getTargetComponentName());
-                jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource.getName(), sourceName, message.getTargetComponentName());
+                String jsonToSend = shiftResourceIdsInJSON(itemJSON, resource, sourceName, message.getTargetComponentName());
+                jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource, sourceName, message.getTargetComponentName());
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
                 try {
                     response = sendMessage(message, jsonToSend);
@@ -214,24 +214,24 @@ public class IMCController {
         try {
             validate(itemJSON);
             String sourceName = rudolfComponentName;
-            Resource resource = Item;
-            List<Message> messages = parseMessages(resourceNameItem, namePOSTAction);
+            String resource = Item;
+            List<Message> messages = parseMessages(resource, namePOSTAction);
             // new resource that will be saved
             MappedResource resourceToSave = new MappedResource();
-            int idToSet = mapper.readTree(itemJSON).findValue(Item.getIdName()).asInt();
+            int idToSet = mapper.readTree(itemJSON).findValue(idName).asInt();
             if (idToSet == 0) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-            if (entityExists(itemJSON, Item, sourceName)) {
+            if (entityExists(itemJSON, resource, sourceName)) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
             resolver.setId(resourceToSave, idToSet, sourceName);
 
             for (Message message : messages) {
                 // shifting enum ids
-                String jsonToSend = shiftEnumIdsInJSON(itemJSON, resource.getName(), sourceName, message.getTargetComponentName());
+                String jsonToSend = shiftEnumIdsInJSON(itemJSON, resource, sourceName, message.getTargetComponentName());
                 // resource id will be 0
-                jsonToSend = nullResourceIdInJSON(jsonToSend, resource.getIdName());
+                jsonToSend = nullResourceIdInJSON(jsonToSend, idName);
                 // adds ids of this entity in other systems if specified in config xml file
                 jsonToSend = addNeededIds(resourceToSave, message, jsonToSend);
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
@@ -246,14 +246,14 @@ public class IMCController {
                 if (response != null && response.getStatusCode().equals(HttpStatus.OK)) {
                     String responseJson = response.getBody();
                     if (responseJson != null) {
-                        int returnedId = mapper.readTree(responseJson).findValue(Item.getIdName()).asInt();
+                        int returnedId = mapper.readTree(responseJson).findValue(idName).asInt();
                         resolver.setId(resourceToSave, returnedId, message.getTargetComponentName());
                     }
                 } else {
                     handleError(response);
                 }
             }
-            saveMappedResource(resourceToSave, resource.getName());
+            saveMappedResource(resourceToSave, resource);
             if (errorHolder.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.CREATED);
             } else {
@@ -272,15 +272,19 @@ public class IMCController {
     public ResponseEntity<String> deleteItem(@RequestBody String itemJSON) {
         logger.debug(invokingItemDELETE + itemJSON);
         String sourceName = rudolfComponentName;
+        String resource = Item;
         try {
             validate(itemJSON);
+            int entityId = mapper.readTree(itemJSON).findValue(idName).asInt();
+            if(entityId == 0)
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             // Hack -  because they dont want to resolve new/existing actions in component wrappers
-            if (!entityExists(itemJSON, Item, sourceName)) {
+            if (!entityExists(itemJSON, resource, sourceName)) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
-            List<Message> messages = parseMessages(resourceNameItem, nameDELETEAction);
+            List<Message> messages = parseMessages(resource, nameDELETEAction);
             for (Message message : messages) {
-                String jsonToSend = shiftResourceIdsInJSON(itemJSON, sourceName, message.getTargetComponentName());
+                String jsonToSend = shiftResourceIdsInJSON(itemJSON, resource, sourceName, message.getTargetComponentName());
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
                 try {
                     response = sendMessage(message, jsonToSend);
@@ -293,7 +297,9 @@ public class IMCController {
                     handleError(response);
                 }
             }
-            deleteEntity(itemJSON, Item.getName(), sourceName);
+            
+            deleteEntity(entityId, resource, sourceName);
+
             if (errorHolder.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -306,8 +312,8 @@ public class IMCController {
     }
 
     // Private methods
-    private String shiftResourceIdsInJSON(String originalJSON, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
-        return jsonUtil.shiftResourceIdsInJSON(originalJSON, sourceComponentName, targetComponentName);
+    private String shiftResourceIdsInJSON(String originalJSON, String resource, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
+        return jsonUtil.shiftResourceIdsInJSON(originalJSON, resource, sourceComponentName, targetComponentName);
     }
 
     private String addResourceIdToJSON(String originalJSON, String componentName, int idValue) throws JSONException, IOException {
@@ -326,13 +332,12 @@ public class IMCController {
         return parser.getRequiredMessagesFor(resourceName, actionName);
     }
 
-    private boolean entityExists(String JSON, Resource resource, String componentName) throws IOException {
-        int sourceId = mapper.readTree(JSON).findValue(resource.getIdName()).asInt();
-        return getMappedEntity(sourceId, resource.getName(), componentName) != null;
+    private boolean entityExists(String JSON, String resource, String componentName) throws IOException {
+        int sourceId = mapper.readTree(JSON).findValue(idName).asInt();
+        return getMappedEntity(sourceId, resource, componentName) != null;
     }
     
-    private void deleteEntity(String JSON, String resourceName, String componentName) throws IOException {
-        int entityId = mapper.readTree(JSON).findValue(componentName).asInt();
+    private void deleteEntity(int entityId, String resourceName, String componentName) throws IOException {
         service.deleteEntity(entityId, resourceName, componentName);
     }
 
