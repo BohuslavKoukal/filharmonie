@@ -8,7 +8,6 @@ package philharmonic.resources.mapping;
 import java.util.ArrayList;
 import java.util.List;
 import philharmonic.model.Enum;
-import philharmonic.model.Resource;
 
 /**
  *

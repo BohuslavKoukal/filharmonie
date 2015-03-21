@@ -8,8 +8,7 @@ package philharmonic.resources;
  *
  * @author Kookie
  */
-public class LoggingConstants {
-  
+public class LoggingConstants {  
     public static final String sendingMessage = "Sending message";
     public static final String messageResponse = "Message response was";
     public static final String validating = "Validating";

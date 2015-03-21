@@ -29,7 +29,6 @@ import philharmonic.model.Message;
 import philharmonic.utilities.JsonUtil;
 import philharmonic.utilities.MessageSender;
 import philharmonic.utilities.MessagesParser;
-import philharmonic.resources.mapping.EnumMapping;
 import philharmonic.service.IMCService;
 import TestConfig.ControllerTestConfig;
 import TestBuilders.JsonBuilder;
@@ -39,10 +38,12 @@ import TestConfig.RealInstance.ControllerRealInstance;
 import TestConfig.RealInstance.ResolverRealInstance;
 import TestConfig.ServiceTestConfig;
 import java.io.IOException;
+import static org.hamcrest.Matchers.is;
 import org.json.JSONException;
 
+
 import static philharmonic.resources.StringConstants.*;
-import static philharmonic.resources.mapping.EnumMapping.*;
+import static philharmonic.resources.ErrorMessages.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
