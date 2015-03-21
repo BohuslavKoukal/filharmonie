@@ -94,10 +94,5 @@ public class MessageParserTest {
         Mockito.verifyZeroInteractions(loggerMock);
     }
     
-    @Test
-    public void getServerAddress_returnsCorrectValue() {
-        String address = testee.getServerAddress();
-        assertEquals("http://localhost:8085", address);
-    }
     
 }

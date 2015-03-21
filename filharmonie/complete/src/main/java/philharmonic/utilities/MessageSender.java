@@ -5,14 +5,16 @@
  */
 package philharmonic.utilities;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.xml.sax.SAXException;
 import philharmonic.model.Message;
 import static philharmonic.resources.StringConstants.*;
-
+import philharmonic.utilities.AddressesParser;
 /**
  *
  * @author Kookie
@@ -32,7 +34,15 @@ public class MessageSender {
     }
 
     public ResponseEntity<String> sendMessage(Message message, String body) {
-        String URI = serverAddress + "/" + message.getTargetComponentName() + "/" + message.getResourceName();
+        String target = message.getTargetComponentName();
+        String URI = "";
+        try {
+            URI = new AddressesParser("Components.xml").getAddressForComponent(target) +
+                    "/" + target + "/" + message.getResourceName();
+        }
+        catch(ParserConfigurationException | SAXException | IOException e) {
+            e.printStackTrace();
+        }        
         HttpEntity entity = new HttpEntity(body);
         if (message.getAction().equals(namePOSTAction)) {
             return rt.exchange(URI, HttpMethod.POST, entity, String.class);

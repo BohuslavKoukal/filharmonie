@@ -7,8 +7,6 @@
 
 <component>
     
-    <server>http://localhost:8085</server>
-    
     <resource name="CPAction">
             <action name="POST">
                 <source>

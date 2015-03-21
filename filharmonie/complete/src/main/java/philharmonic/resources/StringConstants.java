@@ -61,18 +61,6 @@ public class StringConstants {
     public static final String resourceAddressCPAction = "/" + CPAction;
     public static final String resourceAddressItem = "/" + Item;
     
-    // Server address
-    public static final String serverAddress = getAddress();
-    private static String getAddress() {
-        try {
-            return new MessagesParser("Messages.xml").getServerAddress();
-        }
-        catch(ParserConfigurationException | SAXException | IOException e) {
-            logger.debug(e.getStackTrace());
-            e.printStackTrace();
-        }
-        return "";
-    }
     
     
     // REST actions names

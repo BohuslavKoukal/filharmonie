@@ -66,10 +66,6 @@ public class MessagesParser {
         }
         
     }
-    
-    public String getServerAddress() {
-        return doc.getElementsByTagName("server").item(0).getTextContent();
-    }
 
     public List<Message> getRequiredMessagesFor(String resourceName, String actionName) {
         try {

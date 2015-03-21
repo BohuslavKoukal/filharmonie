@@ -6,9 +6,7 @@
 
 
 <component>
-    
-    <server>http://localhost:8085</server>
-    
+        
     <resource name="CPAction">
             <action name="POST">
                 <source>
@@ -19,6 +17,11 @@
                 </target>
                 <target>
                     <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                    <!-- this can be set only in POST -->
+                    <needsIdOf>ticketing</needsIdOf>
                 </target>
             </action>
 
@@ -32,7 +35,51 @@
                 <target>
                     <name>ticketing</name>
                 </target>
+                <target>
+                    <name>web</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                </target>
             </action>
+    </resource>
+    
+        <resource name="Item">
+            <action name="POST">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                </target>
+                <target>
+                    <name>teplo</name>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                </target>
+                <target>
+                    <name>teplo</name>
+                </target>
+            </action>
+
+            <action name="DELETE">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>mailer</name>
+                </target>
+                <target>
+                    <name>teplo</name>
+                </target>
+            </action>        
     </resource>
     
     
