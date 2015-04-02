@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import org.xml.sax.SAXException;
 import philharmonic.model.Message;
 import static philharmonic.resources.StringConstants.*;
-import philharmonic.utilities.AddressesParser;
 /**
  *
  * @author Kookie

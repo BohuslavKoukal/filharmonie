@@ -5,8 +5,6 @@
  */
 package Tests;
 
-import TestConfig.DaoTestConfig;
-import TestConfig.RealInstance.ServiceRealInstance;
 import TestConfig.ServiceTestConfig;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,9 +25,7 @@ import philharmonic.service.IMCService;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ServiceTestConfig.class,
-    DaoTestConfig.class,
-    ServiceRealInstance.class})
+@ContextConfiguration(classes = {ServiceTestConfig.class})
 @WebAppConfiguration
 public class IMCServiceTest {
     

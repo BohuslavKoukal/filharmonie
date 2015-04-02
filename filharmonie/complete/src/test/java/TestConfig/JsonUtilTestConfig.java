@@ -10,6 +10,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import philharmonic.service.IMCService;
 
+import javax.sql.DataSource;
+import org.mockito.Mockito;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import philharmonic.dao.IDao;
+import philharmonic.dao.IDaoImpl;
+import philharmonic.utilities.MappedEntityIdResolver;
+import philharmonic.utilities.JsonUtil;
 /**
  *
  * @author Kookie
@@ -23,5 +33,32 @@ public class JsonUtilTestConfig {
         return Mockito.mock(IMCService.class);
     }
     
+    @Bean
+    public DataSource dataSource() {
+        return Mockito.mock(DriverManagerDataSource.class);
+    }
+    
+    @Bean
+    public JdbcTemplate jt() {
+        return Mockito.mock(JdbcTemplate.class); 
+    }
+    
+    @Bean
+    public MappedEntityIdResolver resolver() {
+        return new MappedEntityIdResolver();      
+
+    }
+    
+    @Bean
+    public JsonUtil JsonUtil() {
+        return new JsonUtil();
+    }
+    
+    @Bean
+    public IDao Dao() {
+        return Mockito.mock(IDaoImpl.class);
+    }
+    
+
     
 }

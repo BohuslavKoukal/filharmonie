@@ -33,10 +33,22 @@ public class EntityResultSetExtractor implements ResultSetExtractor {
     public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
         MappedEntity entity = new MappedEntity();
         entity.id = (int) rs.getLong("id");
-        for (Component component : getMappedComponents()) {
-            int idToSet = (int)rs.getLong(component.getIdName());
-            resolver.setId(entity, idToSet, component.getComponentName());
-        }
+
+            for (Component component : getMappedComponents()) {
+                
+                try {
+                    int idToSet = (int)rs.getLong(component.getIdName());
+                    resolver.setId(entity, idToSet, component.getComponentName());
+                }
+                catch (Exception e) {
+                    // setting id for all components needs to be changed in enums
+                }
+                
+            }
+
+        
+
+        
         
 //        entity.setIdOrchestr((int) rs.getLong("idOrchestr"));
 //        entity.setIdRudolf((int) rs.getLong("idRudolf"));

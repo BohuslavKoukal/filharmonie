@@ -68,6 +68,14 @@
             <version>20090211</version>
         </dependency>
         
+        <!-- Mail -->
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+
+        
         <!--Testing-->
         <dependency>
             <groupId>org.hamcrest</groupId>

@@ -24,6 +24,8 @@ public class MappedEntityIdResolver {
                 return entity.idRudolf;
             case ticketingComponentName:
                 return entity.idTicketing;
+            case teploComponentName:
+                return entity.idTeplo;
         }
         return 0;
     }
@@ -42,6 +44,9 @@ public class MappedEntityIdResolver {
             case ticketingComponentName:
                 entity.idTicketing = id;
                 break;
+            case teploComponentName:
+                entity.idTeplo = id;
+                break;
         }
     }
     
@@ -55,6 +60,8 @@ public class MappedEntityIdResolver {
                 return rudolfComponentIdName;
             case ticketingComponentName:
                 return ticketingComponentIdName;
+            case teploComponentName:
+                return teploComponentIdName;
         }
         return "";
     }

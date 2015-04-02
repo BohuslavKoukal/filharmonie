@@ -5,10 +5,7 @@
  */
 package Tests;
 
-import TestConfig.DaoTestConfig;
 import TestConfig.JsonUtilTestConfig;
-import TestConfig.RealInstance.JsonUtilRealInstance;
-import TestConfig.ServiceTestConfig;
 import java.io.IOException;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +21,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import philharmonic.model.MappedEntity;
 import static philharmonic.resources.StringConstants.*;
-import philharmonic.resources.mapping.EnumMapping;
 import philharmonic.service.IMCService;
 import philharmonic.utilities.JsonUtil;
 
@@ -33,10 +29,7 @@ import philharmonic.utilities.JsonUtil;
  * @author Kookie
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {JsonUtilTestConfig.class,
-    DaoTestConfig.class,
-    ServiceTestConfig.class,
-    JsonUtilRealInstance.class})
+@ContextConfiguration(classes = {JsonUtilTestConfig.class})
 @WebAppConfiguration
 public class JsonUtilTest {
 

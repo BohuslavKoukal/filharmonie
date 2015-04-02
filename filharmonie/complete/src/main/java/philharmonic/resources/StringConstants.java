@@ -4,21 +4,19 @@
  */
 package philharmonic.resources;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
-import org.apache.log4j.Logger;
-import org.xml.sax.SAXException;
 import philharmonic.model.Component;
-import philharmonic.utilities.MessagesParser;
+import static philharmonic.resources.mapping.EnumMapping.category;
+import static philharmonic.resources.mapping.EnumMapping.cycle;
+import static philharmonic.resources.mapping.EnumMapping.itemSubject;
+import static philharmonic.resources.mapping.EnumMapping.place;
 
 /**
  *
  * @author Kookie
  */
 public class StringConstants {
-    private static Logger logger = Logger.getLogger(StringConstants.class);
           
     // Components   
     public static final String middleComponentName = "IMC";
@@ -33,11 +31,18 @@ public class StringConstants {
     public static final String ticketingComponentName = "ticketing";
     public static final String ticketingComponentIdName = "idTicketing";
     
+    public static final String teploComponentName = "teplo";
+    public static final String teploComponentIdName = "idTeplo";
+    
+    public static final String mailerComponentName = "mailer";
+    
     // Component addressing
     public static final String addressMiddleComponent = "/" + middleComponentName;
     public static final String addressOrchestrComponent = "/" + orchestrComponentName;
     public static final String addressRudolfComponent = "/" + rudolfComponentName;
     public static final String addressTicketingComponent = "/" + ticketingComponentName;
+    public static final String addressTeploComponent = "/" + teploComponentName;
+    public static final String addressMailerComponent = "/" + mailerComponentName;
     
     // Intersystem mapping components
     public static final List<Component> getMappedComponents() {
@@ -46,6 +51,7 @@ public class StringConstants {
                 add(new Component(orchestrComponentName, orchestrComponentIdName));
                 add(new Component(rudolfComponentName, rudolfComponentIdName));
                 add(new Component(ticketingComponentName, ticketingComponentIdName));
+                add(new Component(teploComponentName, teploComponentIdName));
             }
         };
     }

@@ -7,9 +7,7 @@ package philharmonic.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import philharmonic.dao.IDao;
-import philharmonic.model.Component;
 import philharmonic.model.MappedEntity;
-import philharmonic.model.MappedResource;
 
 /**
  *

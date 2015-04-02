@@ -5,7 +5,7 @@
  */
 package Tests;
 
-import TestConfig.RealInstance.MessagesParserRealInstance;
+import TestConfig.MessagesParserTestConfig;
 import java.util.List;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -26,7 +26,7 @@ import philharmonic.utilities.MessagesParser;
  * @author Kookie
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {MessagesParserRealInstance.class})
+@ContextConfiguration(classes = {MessagesParserTestConfig.class})
 @WebAppConfiguration
 public class MessageParserTest {
     

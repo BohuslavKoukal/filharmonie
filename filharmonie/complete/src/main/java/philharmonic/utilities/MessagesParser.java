@@ -31,14 +31,13 @@ public class MessagesParser {
     DocumentBuilder dBuilder;
     Document doc;
     
-    private Logger logger;
+    private static final Logger logger = Logger.getLogger(MessagesParser.class);
     
     public MessagesParser(String path) throws ParserConfigurationException, SAXException, IOException {  
         try {
             file = new File(path);
             dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            doc = dBuilder.parse(file); 
-            logger = Logger.getLogger(MessagesParser.class); 
+            doc = dBuilder.parse(file);  
         }
         catch(IOException e) {
             initialize("../" + path, 0);
@@ -56,13 +55,12 @@ public class MessagesParser {
             if(depth < 5)
                 initialize("../" + docPath, ++depth);
             else {
-                logger.debug(exceptionThrown + e.getMessage());
-                e.printStackTrace();
+                logger.error(exceptionThrown + "While initializing MessagesParser - cannot find \n" + docPath);
+                
             }
         }
         catch (ParserConfigurationException | SAXException e) {
-            logger.debug(exceptionThrown + e.getMessage());
-            e.printStackTrace();
+            logger.error(exceptionThrown + "While initializing messages parser\n" + e.getMessage());
         }
         
     }

@@ -72,7 +72,7 @@ public class JsonUtil {
             }
             int sourceId = stringId.asInt();
             jo.remove(property.getPropertyName());
-            MappedEntity entity = service.getMappedEntity(sourceId, sourceComponentName, property.getTableName());
+            MappedEntity entity = service.getMappedEntity(sourceId, property.getTableName(), sourceComponentName);
             if(entity == null) {
                 jo.put(property.getPropertyName(), 0);
             }

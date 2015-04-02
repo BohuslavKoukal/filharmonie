@@ -49,7 +49,7 @@ public class IMCController {
     @Autowired
     MessagesParser parser;
 
-    private Logger logger;
+    private static final Logger logger = Logger.getLogger(IMCController.class);
 
     @Autowired
     private IMCService service;
@@ -58,7 +58,6 @@ public class IMCController {
         rt = new RestTemplate();
         mapper = new ObjectMapper();
         errorHolder = new ArrayList<>();
-        logger = Logger.getLogger(IMCController.class);
     }
 
     /**
@@ -67,7 +66,7 @@ public class IMCController {
     @RequestMapping(value = resourceAddressCPAction, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> postCPAction(@RequestBody String actionJSON) {
-        logger.debug(invokingCPActionPOST + actionJSON);
+        logger.info(invokingCPActionPOST + actionJSON);
         try {
             validate(actionJSON);
             String sourceName = orchestrComponentName;
@@ -89,9 +88,9 @@ public class IMCController {
             return returnAfterPOST();
 
         } catch (Exception e) {
-            logger.info(exceptionThrown, e);
-            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
-            return ret;
+            logger.error(exceptionThrown, e);
+            return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
+            
         }
 
     }
@@ -99,7 +98,7 @@ public class IMCController {
     @RequestMapping(value = resourceAddressCPAction, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<String> putCPAction(@RequestBody String actionJSON) throws IOException, JSONException {
-        logger.debug(invokingCPActionPUT + actionJSON);
+        logger.info(invokingCPActionPUT + actionJSON);
         String sourceName = orchestrComponentName;
         String resource = CPAction;
         try {
@@ -112,6 +111,7 @@ public class IMCController {
             sendPUTMessages(messages, actionJSON, resource, sourceName);
             return returnAfterPUT();
         } catch (Exception e) {
+            logger.error(exceptionThrown, e);
             return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
         }
 
@@ -123,7 +123,7 @@ public class IMCController {
     @RequestMapping(value = resourceAddressItem, method = RequestMethod.PUT)
     @ResponseBody
     public ResponseEntity<String> putItem(@RequestBody String itemJSON) {
-        logger.debug(invokingItemPUT + itemJSON);
+        logger.info(invokingItemPUT + itemJSON);
         String sourceName = rudolfComponentName;
         String resource = Item;
         try {
@@ -136,6 +136,7 @@ public class IMCController {
             sendPUTMessages(messages, itemJSON, resource, sourceName);
             return returnAfterPUT();            
         } catch (Exception e) {
+            logger.error(exceptionThrown, e);
             return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
         }
     }
@@ -143,7 +144,7 @@ public class IMCController {
     @RequestMapping(value = resourceAddressItem, method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<String> postItem(@RequestBody String itemJSON) {
-        logger.debug(invokingItemPOST + itemJSON);
+        logger.info(invokingItemPOST + itemJSON);
         try {
             validate(itemJSON);
             String sourceName = rudolfComponentName;
@@ -164,56 +165,58 @@ public class IMCController {
             saveMappedResource(resourceToSave, resource);
             return returnAfterPOST();
         } catch (Exception e) {
-            logger.info(exceptionThrown, e);
+            logger.error(exceptionThrown, e);
             return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
         }
     }
 
-    @RequestMapping(value = resourceAddressItem, method = RequestMethod.DELETE)
-    @ResponseBody
-    public ResponseEntity<String> deleteItem(@RequestBody String itemJSON) {
-        logger.debug(invokingItemDELETE + itemJSON);
-        String sourceName = rudolfComponentName;
-        String resource = Item;
-        try {
-            validate(itemJSON);
-            int entityId = mapper.readTree(itemJSON).findValue(idName).asInt();
-            if (entityId == 0) {
-                return new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
-            }
-            // Hack -  because they dont want to resolve new/existing actions in component wrappers
-            if (!entityExists(itemJSON, resource, sourceName)) {
-                return new ResponseEntity<>(errorEntityDoesNotExist(entityId), HttpStatus.CONFLICT);
-            }
-            List<Message> messages = parseMessages(resource, nameDELETEAction);
-            for (Message message : messages) {
-                String jsonToSend = shiftResourceIdsInJSON(itemJSON, resource, sourceName, message.getTargetComponentName());
-                ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
-                try {
-                    response = sendMessage(message, jsonToSend);
-                } catch (Exception e) {
-                    logger.info(exceptionThrown, e);
-                    e.printStackTrace();
-                }
-                logger.debug(messageResponse + response);
-                if (!response.getStatusCode().equals(HttpStatus.OK)) {
-                    handleError(response);
-                }
-            }
-
-            deleteEntity(entityId, resource, sourceName);
-
-            if (errorHolder.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.OK);
-            } else {
-                ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
-                errorHolder.clear();
-                return ret;
-            }
-        } catch (Exception e) {
-            return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @RequestMapping(value = resourceAddressItem, method = RequestMethod.DELETE)
+//    @ResponseBody
+//    public ResponseEntity<String> deleteItem(@RequestBody String itemJSON) {
+//        logger.info(invokingItemDELETE + itemJSON);
+//        String sourceName = rudolfComponentName;
+//        String resource = Item;
+//        try {
+//            validate(itemJSON);
+//            int entityId = mapper.readTree(itemJSON).findValue(idName).asInt();
+//            if (entityId == 0) {
+//                return new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+//            }
+//            // Hack -  because they dont want to resolve new/existing actions in component wrappers
+//            if (!entityExists(itemJSON, resource, sourceName)) {
+//                return new ResponseEntity<>(errorEntityDoesNotExist(entityId), HttpStatus.CONFLICT);
+//            }
+//            List<Message> messages = parseMessages(resource, nameDELETEAction);
+//            for (Message message : messages) {
+//                String jsonToSend = shiftResourceIdsInJSON(itemJSON, resource, sourceName, message.getTargetComponentName());
+//                ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
+//                try {
+//                    // quick hack because of java bug with delete                    
+//                    response = sendMessage(message, jsonToSend);
+//                } catch (Exception e) {
+//                    logger.error(exceptionThrown, e);
+//                    e.printStackTrace();
+//                }
+//                logger.info(messageResponse + response);
+//                if (!response.getStatusCode().equals(HttpStatus.OK)) {
+//                    handleError(response);
+//                }
+//            }
+//
+//            deleteEntity(entityId, resource, sourceName);
+//
+//            if (errorHolder.isEmpty()) {
+//                return new ResponseEntity<>(HttpStatus.OK);
+//            } else {
+//                ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
+//                errorHolder.clear();
+//                return ret;
+//            }
+//        } catch (Exception e) {
+//            logger.info(exceptionThrown, e);
+//            return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     // Private methods for shared actions among all controller methods
     
@@ -227,14 +230,18 @@ public class IMCController {
             jsonToSend = addNeededIds(resourceToSave, message, jsonToSend);
             ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
             try {
+                logger.info(sendingMessage + message.getTargetComponentName() + "/" +
+                        message.getResourceName() + "/" + message.getAction() + "\n" +
+                        jsonToSend);
                 response = sendMessage(message, jsonToSend);
+                logger.info(messageResponse + response.getStatusCode() + "\n" +
+                        response.getBody());
             } catch (Exception e) {
-                logger.info(exceptionThrown, e);
+                logger.error(exceptionThrown, e);
                 e.printStackTrace();
             }
-            logger.debug(messageResponse + response);
             // response ok
-            if (response != null && response.getStatusCode().equals(HttpStatus.OK)) {
+            if (response.getStatusCode().equals(HttpStatus.OK)) {
                 String responseJson = response.getBody();
                 if (responseJson != null) {
                     int returnedId = mapper.readTree(responseJson).findValue(idName).asInt();
@@ -252,6 +259,7 @@ public class IMCController {
         } else {
             ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
             errorHolder.clear();
+            logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             return ret;
         }
     }
@@ -262,12 +270,16 @@ public class IMCController {
                 jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource, sourceName, message.getTargetComponentName());
                 ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
                 try {
+                    logger.info(sendingMessage + message.getTargetComponentName() + "/" +
+                        message.getResourceName() + "/" + message.getAction() + "\n" +
+                        jsonToSend);
                     response = sendMessage(message, jsonToSend);
+                    logger.info(messageResponse + response.getStatusCode() + "\n" +
+                        response.getBody());
                 } catch (Exception e) {
-                    logger.info(exceptionThrown, e);
+                    logger.error(exceptionThrown, e);
                     e.printStackTrace();
                 }
-                logger.debug(messageResponse + response);
                 if (!response.getStatusCode().equals(HttpStatus.OK)) {
                     handleError(response);
                 }
@@ -280,6 +292,7 @@ public class IMCController {
             } else {
                 ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
                 errorHolder.clear();
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
                 return ret;
             }
     }
@@ -328,14 +341,12 @@ public class IMCController {
     }
 
     private void validate(String JSON) throws Exception {
-        logger.debug(validating + JSON);
         final JsonParser validationParser = new ObjectMapper().getJsonFactory().createJsonParser(JSON);
         while (validationParser.nextToken() != null) {
         }
     }
 
     private ResponseEntity<String> sendMessage(Message message, String body) {
-        logger.debug(sendingMessage + " Message: " + message + " Body: " + body);
         return sender.sendMessage(message, body);
     }
 

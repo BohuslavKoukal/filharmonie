@@ -20,7 +20,6 @@
                 </target>
                 <target>
                     <name>web</name>
-                    <!-- this can be set only in POST -->
                     <needsIdOf>ticketing</needsIdOf>
                 </target>
             </action>
@@ -37,9 +36,6 @@
                 </target>
                 <target>
                     <name>web</name>
-                </target>
-                <target>
-                    <name>mailer</name>
                 </target>
             </action>
     </resource>
