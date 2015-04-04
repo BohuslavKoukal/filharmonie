@@ -62,7 +62,9 @@ public class JsonUtil {
      * remove original enum ID from JSON and put there ID of enum in targetComponent instead
      * return changed JSON
      */
-    public String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
+    public String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName)
+            throws JSONException, IOException
+    {
         JSONObject jo = new JSONObject(originalJSON);
         for (Enum property : getMappedEnums(resourceName)) {
             JsonNode stringId = mapper.readTree(originalJSON).findValue(property.getPropertyName());
@@ -88,14 +90,18 @@ public class JsonUtil {
      * Remove original ID from JSON and put there ID 0 instead
      * return changed JSON
      */
-    public String nullResourceIdInJSON(String originalJSON, String resourceIdName) throws JSONException {
+    public String nullResourceIdInJSON(String originalJSON, String resourceIdName)
+            throws JSONException
+    {
         JSONObject jo = new JSONObject(originalJSON);
         jo.remove(resourceIdName);
         jo.put(resourceIdName, 0);
         return jo.toString();
     }
     
-    public String addResourceIdToJSON(String originalJSON, String componentName, int idValue) throws JSONException {
+    public String addResourceIdToJSON(String originalJSON, String componentName, int idValue)
+            throws JSONException
+    {
         JSONObject jo = new JSONObject(originalJSON);
         jo.put(resolver.getIdName(componentName), idValue);
         return jo.toString();

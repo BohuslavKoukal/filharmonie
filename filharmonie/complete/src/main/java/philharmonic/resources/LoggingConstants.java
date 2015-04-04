@@ -19,4 +19,11 @@ public class LoggingConstants {
     public static final String invokingItemPUT = "Item PUT was called\n";
     public static final String invokingItemPOST = "Item POST was called\n";
     public static final String invokingItemDELETE = "Item DELETE was called\n";
+    
+    
+    public static final String errorWhileDeletingResourceId = "There was an error while trying to remove resource id.";
+    public static final String errorWhileShiftingResourceIds = "There was an error while trying to shift resource ids.";
+    public static final String errorWhileShiftingEnumIds = "There was an error while trying to shift enum ids.";
+    public static final String errorWhileAddingResourceId = "There was an error while trying to add resource id.";
+
 }

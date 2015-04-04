@@ -52,4 +52,8 @@ public class MessageSender {
 
         return null;
     }
+    
+    public ResponseEntity<String> sendMessage(Message message, int id) {
+        return null;
+    }
 }
