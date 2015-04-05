@@ -124,17 +124,17 @@ public class IMCControllerTest {
         verify(senderMock, never()).sendMessage(any(Message.class), anyString());
     }
 
-//    @Test
-//    public void postCPAction_invalidJson_returnsBadRequestAndDoesNotCreateEntityAndSendsNoMessages() throws Exception {
-//        String json = JsonBuilder.invalidate(new JsonCPActionBuilder(12).build());
-//
-//        mockMvc.perform(post(addressMiddleComponent + resourceAddressCPAction)
-//                .content(json)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        verify(serviceMock, never()).saveMappedResource(any(MappedResource.class), anyString());
-//        verify(senderMock, never()).sendMessage(any(Message.class), anyString());
-//    }
+    @Test
+    public void postCPAction_invalidJson_returnsBadRequestAndDoesNotCreateEntityAndSendsNoMessages() throws Exception {
+        String json = JsonBuilder.invalidate(new JsonCPActionBuilder(12).build());
+
+        mockMvc.perform(post(addressMiddleComponent + resourceAddressCPAction)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(serviceMock, never()).saveMappedResource(any(MappedResource.class), anyString());
+        verify(senderMock, never()).sendMessage(any(Message.class), anyString());
+    }
 
     @Test
     public void postCPAction_JsonWithExistingId_returnsConflictAndDoesNotCreateEntityAndSendsNoMessages() throws Exception {
@@ -215,19 +215,19 @@ public class IMCControllerTest {
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), anyString());
     }
 
-    @Test
-    public void postCPAction_JsonWithEnumMappingConflictOrEnumValue0_SendMessagesAndReturnsConflict() throws Exception {
-        List<Message> mockedMessages = new MessagesBuilder().buildSampleMessages(CPAction, namePOSTAction);
-        String jsonError = new JsonCPActionBuilder(12).withPlaceId(0).build();
-        mockSetupCPActionPOST(jsonError, mockedMessages, new ResponseEntity<String>(HttpStatus.CONFLICT));
-        mockMvc.perform(post(addressMiddleComponent + resourceAddressCPAction)
-                .content(jsonError)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
-        verify(serviceMock, times(1)).saveMappedResource(any(MappedResource.class), eq(CPAction));
-        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(0)), eq(jsonError));
-        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
-    }
+//    @Test
+//    public void postCPAction_JsonWithEnumMappingConflictOrEnumValue0_SendMessagesAndReturnsConflict() throws Exception {
+//        List<Message> mockedMessages = new MessagesBuilder().buildSampleMessages(CPAction, namePOSTAction);
+//        String jsonError = new JsonCPActionBuilder(12).withPlaceId(0).build();
+//        mockSetupCPActionPOST(jsonError, mockedMessages, new ResponseEntity<String>(HttpStatus.CONFLICT));
+//        mockMvc.perform(post(addressMiddleComponent + resourceAddressCPAction)
+//                .content(jsonError)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isConflict());
+//        verify(serviceMock, times(1)).saveMappedResource(any(MappedResource.class), eq(CPAction));
+//        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(0)), eq(jsonError));
+//        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
+//    }
 
     private void mockSetupCPActionPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
         when(parserMock.getRequiredMessagesFor(CPAction, namePOSTAction))
@@ -274,16 +274,16 @@ public class IMCControllerTest {
         verify(senderMock, never()).sendMessage(any(Message.class), anyString());
     }
 
-//    @Test
-//    public void putCPAction_invalidJson_returnsBadRequestAndSendsNoMessages() throws Exception {
-//        String json = JsonBuilder.invalidate(new JsonCPActionBuilder(12).build());
-//
-//        mockMvc.perform(put(addressMiddleComponent + resourceAddressCPAction)
-//                .content(json)
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isBadRequest());
-//        verify(senderMock, never()).sendMessage(any(Message.class), anyString());
-//    }   
+    @Test
+    public void putCPAction_invalidJson_returnsBadRequestAndSendsNoMessages() throws Exception {
+        String json = JsonBuilder.invalidate(new JsonCPActionBuilder(12).build());
+
+        mockMvc.perform(put(addressMiddleComponent + resourceAddressCPAction)
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        verify(senderMock, never()).sendMessage(any(Message.class), anyString());
+    }   
     
     
     @Test
@@ -505,19 +505,19 @@ public class IMCControllerTest {
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), anyString());
     }
 
-    @Test
-    public void postItem_JsonWithEnumMappingConflictOrEnumValue0_SendMessagesAndReturnsConflict() throws Exception {
-        List<Message> mockedMessages = new MessagesBuilder().buildSampleMessages(Item, namePOSTAction);
-        String jsonError = new JsonItemBuilder(12).withItemSubjectId(0).build();
-        mockSetupItemPOST(jsonError, mockedMessages, new ResponseEntity<String>(HttpStatus.CONFLICT));
-        mockMvc.perform(post(addressMiddleComponent + resourceAddressItem)
-                .content(jsonError)
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isConflict());
-        verify(serviceMock, times(1)).saveMappedResource(any(MappedResource.class), eq(Item));
-        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(0)), eq(jsonError));
-        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
-    }
+//    @Test
+//    public void postItem_JsonWithEnumMappingConflictOrEnumValue0_SendMessagesAndReturnsConflict() throws Exception {
+//        List<Message> mockedMessages = new MessagesBuilder().buildSampleMessages(Item, namePOSTAction);
+//        String jsonError = new JsonItemBuilder(12).withItemSubjectId(0).build();
+//        mockSetupItemPOST(jsonError, mockedMessages, new ResponseEntity<String>(HttpStatus.CONFLICT));
+//        mockMvc.perform(post(addressMiddleComponent + resourceAddressItem)
+//                .content(jsonError)
+//                .contentType(MediaType.APPLICATION_JSON))
+//                .andExpect(status().isConflict());
+//        verify(serviceMock, times(1)).saveMappedResource(any(MappedResource.class), eq(Item));
+//        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(0)), eq(jsonError));
+//        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
+//    }
 
     private void mockSetupItemPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
         when(parserMock.getRequiredMessagesFor(Item, namePOSTAction))

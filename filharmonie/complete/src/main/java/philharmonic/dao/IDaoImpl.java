@@ -71,7 +71,7 @@ public class IDaoImpl implements IDao {
     @Override
     public void delete(int id, String tableName, String componentName) {
         String sqlQuery = createDeleteQueryFor(id, tableName, componentName);
-        jt.query(sqlQuery, new EntityRowMapper());
+        jt.execute(sqlQuery);
     }
 
     private String createSelectQueryFor(int id, String tableName, String componentName) {

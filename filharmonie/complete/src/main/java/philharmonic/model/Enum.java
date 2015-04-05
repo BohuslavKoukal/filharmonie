@@ -9,12 +9,12 @@ package philharmonic.model;
  * @author Kookie
  */
 public class Enum {
-    private String propertyName;
+    private String idName;
     private String tableName;
 
-    public Enum(String tableName, String propertyName) {
+    public Enum(String tableName, String idName) {
         this.tableName = tableName;
-        this.propertyName = propertyName;
+        this.idName = idName;
         
     }
 
@@ -22,12 +22,12 @@ public class Enum {
     }
     
     
-    public String getPropertyName() {
-        return propertyName;
+    public String getIdName() {
+        return idName;
     }
 
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
+    public void setIdName(String idName) {
+        this.idName = idName;
     }
 
     public String getTableName() {

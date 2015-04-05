@@ -9,16 +9,17 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import org.xml.sax.SAXException;
 import philharmonic.model.Message;
 import static philharmonic.resources.StringConstants.*;
+
 /**
  *
  * @author Kookie
  */
-
 
 public class MessageSender {
 
@@ -27,21 +28,17 @@ public class MessageSender {
     public MessageSender() {
         rt = new RestTemplate();
     }
-    
+
     public MessageSender(RestTemplate rt) {
         this.rt = rt;
     }
 
-    public ResponseEntity<String> sendMessage(Message message, String body) {
+    public ResponseEntity<String> sendMessage(Message message, String body) throws ParserConfigurationException, SAXException, IOException {
         String target = message.getTargetComponentName();
-        String URI = "";
-        try {
-            URI = new AddressesParser("Components.xml").getAddressForComponent(target) +
-                    "/" + target + "/" + message.getResourceName();
-        }
-        catch(ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }        
+        String URI;
+        URI = new AddressesParser("Components.xml").getAddressForComponent(target)
+                + "/" + target + "/" + message.getResourceName();
+
         HttpEntity entity = new HttpEntity(body);
         if (message.getAction().equals(namePOSTAction)) {
             return rt.exchange(URI, HttpMethod.POST, entity, String.class);
@@ -52,8 +49,22 @@ public class MessageSender {
 
         return null;
     }
-    
-    public ResponseEntity<String> sendMessage(Message message, int id) {
-        return null;
+
+    public ResponseEntity<String> sendMessage(Message message, int id) throws ParserConfigurationException, SAXException, IOException {
+        String target = message.getTargetComponentName();
+        String URI;
+        URI = new AddressesParser("Components.xml").getAddressForComponent(target)
+                + "/" + target + "/" + message.getResourceName() + "/" + id;
+
+        try {
+            if (message.getAction().equals(nameDELETEAction)) {
+                rt.delete(URI);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity(HttpStatus.CONFLICT);
+        }
+        return new ResponseEntity(HttpStatus.OK);
+
     }
 }
+

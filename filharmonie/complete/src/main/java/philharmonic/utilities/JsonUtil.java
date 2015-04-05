@@ -55,6 +55,16 @@ public class JsonUtil {
         }
         return jo.toString();
     }
+    
+    public int getResourceIdInTarget(int sourceId, String resourceName, String sourceComponentName, String targetComponentName) {
+        MappedEntity entity = service.getMappedEntity(sourceId, resourceName, sourceComponentName);
+        if (entity == null) {
+            return 0;            
+        }
+        else {
+            return resolver.getIdValue(entity, targetComponentName);
+        }
+    }
 
     
     /*
@@ -66,21 +76,23 @@ public class JsonUtil {
             throws JSONException, IOException
     {
         JSONObject jo = new JSONObject(originalJSON);
-        for (Enum property : getMappedEnums(resourceName)) {
-            JsonNode stringId = mapper.readTree(originalJSON).findValue(property.getPropertyName());
+        for (Enum enume : getMappedEnums(resourceName)) {
+            JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
             if(stringId == null) {
-                jo.put(property.getPropertyName(), 0);
                 continue;
             }
             int sourceId = stringId.asInt();
-            jo.remove(property.getPropertyName());
-            MappedEntity entity = service.getMappedEntity(sourceId, property.getTableName(), sourceComponentName);
+            jo.remove(enume.getIdName());
+            // vezmi si z databaze ten enum
+            MappedEntity entity = service.getMappedEntity(sourceId, enume.getTableName(), sourceComponentName);
+            // enum v databazi neexistuje
+            // zeptej se zdroje na jeho textovou reprezentaci, posli ji cili, namapuj si ji a pak pokracuj
             if(entity == null) {
-                jo.put(property.getPropertyName(), 0);
+                jo.put(enume.getIdName(), 0);
             }
             else {
                 int targetId = resolver.getIdValue(entity, targetComponentName);            
-                jo.put(property.getPropertyName(), targetId);
+                jo.put(enume.getIdName(), targetId);
             }            
         }
         return jo.toString();
