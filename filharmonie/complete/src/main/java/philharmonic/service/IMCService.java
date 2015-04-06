@@ -67,6 +67,16 @@ public class IMCService {
         dao.delete(id, resourceTableName, componentName);
         
     }
+   
+   public void updateEntity(String resourceTableName, String setColumn, int setId, String whereColumn, int whereId) {
+        if(whereId == 0)
+            return;
+        if(resourceTableName == null || setColumn == null || whereColumn == null)
+            return;
+        if(resourceTableName.isEmpty() || setColumn.isEmpty() || whereColumn.isEmpty())
+            return;
+        dao.update(resourceTableName, setColumn, setId, whereColumn, whereId);        
+    }
     
     
 }

@@ -6,6 +6,7 @@
 package philharmonic.utilities;
 
 import java.io.IOException;
+import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
@@ -117,5 +118,13 @@ public class JsonUtil {
         JSONObject jo = new JSONObject(originalJSON);
         jo.put(resolver.getIdName(componentName), idValue);
         return jo.toString();
+    }
+    
+    
+    public int getEnumId(String JSON, String enumIdName) throws IOException {
+        JsonNode stringId = mapper.readTree(JSON).findValue(enumIdName);
+        if(stringId == null) return 0;
+        else
+            return stringId.asInt();
     }
 }

@@ -7,6 +7,7 @@ package philharmonic.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import philharmonic.model.Message;
+import philharmonic.model.Enum;
 import philharmonic.service.IMCService;
 import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +29,7 @@ import philharmonic.utilities.*;
 import static philharmonic.resources.StringConstants.*;
 import static philharmonic.resources.LoggingConstants.*;
 import static philharmonic.resources.ErrorMessages.*;
+import static philharmonic.resources.mapping.EnumMapping.getMappedEnums;
 
 /**
  *
@@ -98,7 +100,7 @@ public class IMCController {
             resolver.setId(resourceToSave, idToSet, sourceName);
 
             sendPOSTMessages(messages, actionJSON, sourceName, resource, resourceToSave);
-            saveMappedResource(resourceToSave, resource);
+            saveMappedEntity(resourceToSave, resource);
             return returnAfterPOST();
         } catch (Exception e) {
             logger.error(exceptionThrown, e);
@@ -168,7 +170,7 @@ public class IMCController {
             resolver.setId(resourceToSave, idToSet, sourceName);
 
             sendPOSTMessages(messages, itemJSON, sourceName, resource, resourceToSave);
-            saveMappedResource(resourceToSave, resource);
+            saveMappedEntity(resourceToSave, resource);
             return returnAfterPOST();
         } catch (Exception e) {
             logger.error(exceptionThrown, e);
@@ -238,6 +240,7 @@ public class IMCController {
     // Private methods for shared actions among all controller methods
     private void sendPOSTMessages(List<Message> messages, String JSON, String sourceName, String resource, MappedResource resourceToSave) {
         for (Message message : messages) {
+            assureConsistentEnums(JSON, resource, sourceName, message.getTargetComponentName());
             // shifting enum ids
             String jsonToSend = shiftEnumIdsInJSON(JSON, resource, sourceName, message.getTargetComponentName());
             // resource id will be 0
@@ -301,12 +304,13 @@ public class IMCController {
 
     private void sendPUTMessages(List<Message> messages, String JSON, String resource, String sourceName) {
         for (Message message : messages) {
+            assureConsistentEnums(JSON, resource, sourceName, message.getTargetComponentName());
             String jsonToSend = shiftResourceIdsInJSON(JSON, resource, sourceName, message.getTargetComponentName());
             jsonToSend = shiftEnumIdsInJSON(jsonToSend, resource, sourceName, message.getTargetComponentName());
             if (jsonToSend == null) {
                 continue;
             }
-            ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);           
+            ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
             try {
                 logger.info(sendingMessage + message.getTargetComponentName() + "/"
                         + message.getResourceName() + "/" + message.getAction() + "\n"
@@ -392,7 +396,7 @@ public class IMCController {
         }
         return null;
     }
-    
+
     private int getResourceIdInTarget(int sourceId, String resource, String sourceComponentName, String targetComponentName) {
         return jsonUtil.getResourceIdInTarget(sourceId, resource, sourceComponentName, targetComponentName);
     }
@@ -415,6 +419,46 @@ public class IMCController {
             errorHolder.add(errorWhileShiftingEnumIds(e));
         }
         return null;
+    }
+
+    private void assureConsistentEnums(String originalJSON,
+            String resourceName,
+            String sourceComponentName, String targetComponentName) {
+        try {
+            List<Enum> enums = getMappedEnums(resourceName);
+            for (Enum enume : enums) {
+                int enumeSourceId = jsonUtil.getEnumId(originalJSON, enume.getIdName());
+                boolean exists = entityExists(enumeSourceId, enume.getTableName(), sourceComponentName);
+                boolean isMapped = isMapped(enumeSourceId, enume.getTableName(), sourceComponentName, targetComponentName);
+                if (exists && isMapped) {
+                    continue;
+                }
+                if (!exists) {
+                    MappedEntity enumToSave = new MappedEntity();
+                    resolver.setId(enumToSave, enumeSourceId, sourceComponentName);
+                    saveMappedEntity(enumToSave, resourceName);
+                }
+                // Vyzadej si textovou reprezentaci od source
+                Message getRepresentation = new Message(nameGETAction, enume.getTableName(), sourceComponentName, null);
+                String enumTextRepresentation = sendMessage(getRepresentation, enumeSourceId).getBody();                
+                // Posli ji do targetu
+                Message postRepresentation = new Message(namePOSTAction, enume.getTableName(), targetComponentName, null);
+                String idInTarget = sendMessage(postRepresentation, enumTextRepresentation).getBody();
+                int returnedId = mapper.readTree(idInTarget).findValue(idName).asInt();
+                // Updatni id targetu v databazi
+                updateMappedEntity(enume.getTableName(), targetComponentName, returnedId, sourceComponentName, enumeSourceId);
+            }
+        } catch (Exception e) {
+            logger.error(errorWhileMappingEnums, e);
+            errorHolder.add(errorWhileMappingEnums(e));
+        }
+
+    }
+
+    private boolean isMapped(int id, String enumName, String sourceComponentName, String targetComponentName) {
+        MappedEntity e = getMappedEntity(id, enumName, sourceComponentName);
+        if(e == null) return false;
+        return resolver.getIdValue(e, targetComponentName) != 0;
     }
 
     private String nullResourceIdInJSON(String originalJSON, String resourceIdName) {
@@ -444,8 +488,12 @@ public class IMCController {
         return ret;
     }
 
-    private void saveMappedResource(MappedResource resource, String resourceName) {
-        service.saveMappedResource(resource, resourceName);
+    private void saveMappedEntity(MappedEntity entity, String entityName) {
+        service.saveMappedResource(entity, entityName);
+    }
+    
+    private void updateMappedEntity(String entityName, String setColumn, int setId, String whereColumn, int whereId) {
+        service.updateEntity(entityName, setColumn, setId, whereColumn, whereId);
     }
 
     private String validate(String JSON) {

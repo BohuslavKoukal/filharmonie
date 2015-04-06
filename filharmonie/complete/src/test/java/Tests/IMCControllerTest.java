@@ -36,6 +36,7 @@ import TestBuilders.JsonCPActionBuilder;
 import TestBuilders.JsonItemBuilder;
 import TestBuilders.MessagesBuilder;
 import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
 import org.json.JSONException;
 
 
@@ -43,7 +44,9 @@ import static philharmonic.resources.StringConstants.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.mockito.Mockito.*;
+import static philharmonic.resources.mapping.EnumMapping.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -229,7 +232,8 @@ public class IMCControllerTest {
 //        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
 //    }
 
-    private void mockSetupCPActionPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
+    private void mockSetupCPActionPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException, ParserConfigurationException, SAXException {
+        mockSetupEnumMapping(null);
         when(parserMock.getRequiredMessagesFor(CPAction, namePOSTAction))
                 .thenReturn(mockedMessages);
         when(jsonUtilMock.shiftEnumIdsInJSON(eq(json), eq(CPAction), eq(orchestrComponentName), anyString()))
@@ -303,7 +307,7 @@ public class IMCControllerTest {
         String json = new JsonCPActionBuilder(12).build();
         List<Message> mockedMessages = new MessagesBuilder().buildSampleMessages(CPAction, namePUTAction);
         
-        mockSetupCPActionPUT(json, mockedMessages, new ResponseEntity<String>(HttpStatus.OK));
+        mockSetupCPActionPUT(json, mockedMessages, new ResponseEntity<>(HttpStatus.OK));
         mockMvc.perform(put(addressMiddleComponent + resourceAddressCPAction)
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -316,7 +320,6 @@ public class IMCControllerTest {
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(0)), eq(json));
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(json));
         verify(jsonUtilMock, never()).addResourceIdToJSON(anyString(), anyString(), anyInt());
-        verify(serviceMock, never()).saveMappedResource(any(MappedResource.class), anyString());
     }
 
     @Test
@@ -361,19 +364,21 @@ public class IMCControllerTest {
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
     }
     
-    private void mockSetupCPActionPUT(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
+    private void mockSetupCPActionPUT(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException, ParserConfigurationException, SAXException {
         MappedEntity me = new MappedEntity();
         me.id = 12;
         me.idOrchestr = 12;
         me.idRudolf = 12;
         when(serviceMock.getMappedEntity(12, CPAction, orchestrComponentName))
                 .thenReturn(me);
+        mockSetupEnumMapping(me);
+        
         when(parserMock.getRequiredMessagesFor(CPAction, namePUTAction))
                 .thenReturn(mockedMessages);
         when(jsonUtilMock.shiftEnumIdsInJSON(eq(json), eq(CPAction), eq(orchestrComponentName), anyString()))
                 .thenReturn(json);
         when(jsonUtilMock.shiftResourceIdsInJSON(eq(json), eq(CPAction), eq(orchestrComponentName), anyString()))
-                .thenReturn(json);
+                .thenReturn(json);        
         if (response.getStatusCode().equals(HttpStatus.METHOD_NOT_ALLOWED)) {
             when(senderMock.sendMessage(any(Message.class), anyString()))
                     .thenThrow(new HttpClientErrorException(HttpStatus.METHOD_NOT_ALLOWED));
@@ -382,6 +387,8 @@ public class IMCControllerTest {
                     .thenReturn(response);
         }
     }
+    
+    
     
     /**
      ********************************************************************************************************/
@@ -519,7 +526,8 @@ public class IMCControllerTest {
 //        verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
 //    }
 
-    private void mockSetupItemPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
+    private void mockSetupItemPOST(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException, ParserConfigurationException, SAXException {
+        mockSetupEnumMapping(null);
         when(parserMock.getRequiredMessagesFor(Item, namePOSTAction))
                 .thenReturn(mockedMessages);
         when(jsonUtilMock.shiftEnumIdsInJSON(eq(json), eq(Item), eq(rudolfComponentName), anyString()))
@@ -652,13 +660,16 @@ public class IMCControllerTest {
         verify(senderMock, times(1)).sendMessage(eq(mockedMessages.get(1)), eq(jsonError));
     }
     
-    private void mockSetupItemPUT(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException {
+    private void mockSetupItemPUT(String json, List<Message> mockedMessages, ResponseEntity response) throws JSONException, IOException, ParserConfigurationException, SAXException {
         MappedEntity me = new MappedEntity();
         me.id = 12;
         me.idOrchestr = 12;
         me.idRudolf = 12;
+        me.idTicketing = 12;
+        me.idTeplo = 12;
         when(serviceMock.getMappedEntity(12, Item, rudolfComponentName))
                 .thenReturn(me);
+        mockSetupEnumMapping(me);
         when(parserMock.getRequiredMessagesFor(Item, namePUTAction))
                 .thenReturn(mockedMessages);
         when(jsonUtilMock.shiftEnumIdsInJSON(eq(json), eq(Item), eq(rudolfComponentName), anyString()))
@@ -801,6 +812,25 @@ public class IMCControllerTest {
 //        }
 //    }
 
+    
+    private void mockSetupEnumMapping(MappedEntity me) {
+        if(me == null) {
+            me = new MappedEntity();
+            me.id = 12;
+            me.idOrchestr = 12;
+            me.idRudolf = 12;
+            me.idTeplo = 12;
+            me.idTicketing = 12;
+        }
+        when(serviceMock.getMappedEntity(anyInt(), eq(place.getTableName()), anyString()))
+                .thenReturn(me);
+        when(serviceMock.getMappedEntity(anyInt(), eq(cycle.getTableName()), anyString()))
+                .thenReturn(me);
+        when(serviceMock.getMappedEntity(anyInt(), eq(category.getTableName()), anyString()))
+                .thenReturn(me);
+        when(serviceMock.getMappedEntity(anyInt(), eq(itemSubject.getTableName()), anyString()))
+                .thenReturn(me);
+    }
     
     
     // Helpers

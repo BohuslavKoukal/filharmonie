@@ -19,4 +19,6 @@ public interface IDao {
     MappedEntity get(int id, String tableName, String componentName);
 
     void delete(int id, String tableName, String componentName);
+    
+    void update(String resourceTableName, String setColumn, int setId, String whereColumn, int whereId);
 }

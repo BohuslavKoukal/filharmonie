@@ -73,6 +73,12 @@ public class IDaoImpl implements IDao {
         String sqlQuery = createDeleteQueryFor(id, tableName, componentName);
         jt.execute(sqlQuery);
     }
+    
+    @Override
+    public void update(String resourceTableName, String setColumn, int setId, String whereColumn, int whereId) {
+        String sqlQuery = createUpdateQueryFor(resourceTableName, setColumn, setId, whereColumn, whereId);
+        jt.execute(sqlQuery);
+    }
 
     private String createSelectQueryFor(int id, String tableName, String componentName) {
         String idName = resolver.getIdName(componentName);
@@ -82,6 +88,14 @@ public class IDaoImpl implements IDao {
     private String createDeleteQueryFor(int id, String tableName, String componentName) {
         String idName = resolver.getIdName(componentName);
         return "DELETE FROM " + tableName + " WHERE " + idName + " = " + id;
+    }
+    
+    private String createUpdateQueryFor(String tableName, String setColumn, int setId, String whereColumn, int whereId) {
+        String setIdName = resolver.getIdName(setColumn);
+        String whereIdName = resolver.getIdName(whereColumn);
+        return "UPDATE " + tableName +
+                " SET " + setIdName + " = " + setId + 
+                " WHERE " + whereIdName + " = " + whereId;
     }
 
 }

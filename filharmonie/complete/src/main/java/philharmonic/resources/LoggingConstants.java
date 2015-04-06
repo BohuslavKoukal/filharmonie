@@ -24,6 +24,7 @@ public class LoggingConstants {
     public static final String errorWhileShiftingResourceIds = "There was an error while trying to shift resource ids. ";
     public static final String errorWhileShiftingEnumIds = "There was an error while trying to shift enum ids. ";
     public static final String errorWhileAddingResourceId = "There was an error while trying to add resource id. ";
+    public static final String errorWhileMappingEnums = "There was an error while mapping enums. ";
     
     public static final String exceptionThrown = "Following error occurred: \n";
     

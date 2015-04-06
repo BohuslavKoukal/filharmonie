@@ -73,5 +73,5 @@ public class StringConstants {
     public static final String namePUTAction = "PUT";
     public static final String namePOSTAction = "POST";
     public static final String nameDELETEAction = "DELETE";
-    
+    public static final String nameGETAction = "GET";
 }

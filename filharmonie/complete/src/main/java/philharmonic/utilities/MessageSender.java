@@ -60,6 +60,9 @@ public class MessageSender {
             if (message.getAction().equals(nameDELETEAction)) {
                 rt.delete(URI);
             }
+            if (message.getAction().equals(nameGETAction)) {
+                return rt.getForEntity(URI, String.class);
+            }
         } catch (Exception e) {
             return new ResponseEntity(HttpStatus.CONFLICT);
         }
