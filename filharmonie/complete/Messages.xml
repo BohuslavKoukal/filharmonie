@@ -5,52 +5,19 @@
 -->
 
 
-<component>
-        
-    <resource name="CPAction">
-            <action name="POST">
-                <source>
-                    <name>orchestr</name>
-                </source>    
-                <target>
-                    <name>rudolf</name>
-                </target>
-                <target>
-                    <name>ticketing</name>
-                </target>
-                <target>
-                    <name>web</name>
-                    <needsIdOf>ticketing</needsIdOf>
-                </target>
-            </action>
-
-            <action name="PUT">
-                <source>
-                    <name>orchestr</name>
-                </source>
-                <target>
-                    <name>rudolf</name>
-                </target>
-                <target>
-                    <name>ticketing</name>
-                </target>
-                <target>
-                    <name>web</name>
-                </target>
-            </action>
-    </resource>
-    
+<component>    
         <resource name="Item">
             <action name="POST">
                 <source>
                     <name>rudolf</name>
                 </source>
                 <target>
-                    <name>mailer</name>
+                    <name>teplo</name>
+                    <needsIdOf>rudolf</needsIdOf>
                 </target>
                 <target>
-                    <name>teplo</name>
-                </target>
+                    <name>mailer</name>
+                </target>                
             </action>
 
             <action name="PUT">
@@ -58,11 +25,11 @@
                     <name>rudolf</name>
                 </source>
                 <target>
-                    <name>mailer</name>
-                </target>
-                <target>
                     <name>teplo</name>
                 </target>
+                <target>
+                    <name>mailer</name>
+                </target>                
             </action>
 
             <action name="DELETE">
@@ -70,14 +37,11 @@
                     <name>rudolf</name>
                 </source>
                 <target>
-                    <name>mailer</name>
-                </target>
-                <target>
                     <name>teplo</name>
                 </target>
+                <target>
+                    <name>mailer</name>
+                </target>                
             </action>        
-    </resource>
-    
-    
-    
+        </resource>
 </component>

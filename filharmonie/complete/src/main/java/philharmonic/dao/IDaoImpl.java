@@ -36,26 +36,36 @@ public class IDaoImpl implements IDao {
 
         String idNames = "";
         for (Component c : getMappedComponents()) {
-            idNames += c.getIdName();
+            if(!valueIs0(entity, c)) {
+                idNames += c.getIdName();
             // if this is not last element
-            if (!c.getComponentName().equals(
+                if (!c.getComponentName().equals(
                     getMappedComponents().get(getMappedComponents().size() - 1).getComponentName())) {
-                idNames += ", ";
+                    idNames += ", ";
+                }
             }
+            
 
         }
 
         String idValues = "";
         for (Component c : getMappedComponents()) {
-            idValues += resolver.getIdValue(entity, c.getComponentName());
-            // if this is not last element
-            if (!c.getComponentName().equals(
-                    getMappedComponents().get(getMappedComponents().size() - 1).getComponentName())) {
-                idValues += ", ";
+            if(!valueIs0(entity, c)) {
+                idValues += resolver.getIdValue(entity, c.getComponentName());
+                // if this is not last element
+                if (!c.getComponentName().equals(
+                        getMappedComponents().get(getMappedComponents().size() - 1).getComponentName())) {
+                    idValues += ", ";
+                }
             }
+            
         }
         jt.update("INSERT INTO " + tableName + "(" + idNames + ")"
                 + " VALUES(" + idValues + ")");
+    }
+    
+    private boolean valueIs0(MappedEntity entity, Component c) {
+        return resolver.getIdValue(entity, c.getComponentName()) == 0;
     }
 
     @Override

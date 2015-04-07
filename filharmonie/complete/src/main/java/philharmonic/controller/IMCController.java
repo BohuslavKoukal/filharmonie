@@ -149,19 +149,27 @@ public class IMCController {
 
             String validationError = validate(itemJSON);
             if (!validationError.equals("")) {
-                return new ResponseEntity(validationError, HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity(validationError, HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             int idToSet = 0;
             try {
                 idToSet = mapper.readTree(itemJSON).findValue(idName).asInt();
             } catch (Exception e) {
-                return new ResponseEntity<>(errorInvalidId(), HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity(errorInvalidId(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             if (idToSet == 0) {
-                return new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             if (entityExists(idToSet, resource, sourceName)) {
-                return new ResponseEntity<>(errorEntityExists(idToSet), HttpStatus.CONFLICT);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorEntityExists(idToSet), HttpStatus.CONFLICT);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
 
             List<Message> messages = parseMessages(resource, namePOSTAction);
@@ -174,7 +182,9 @@ public class IMCController {
             return returnAfterPOST();
         } catch (Exception e) {
             logger.error(exceptionThrown, e);
-            return new ResponseEntity(errorWhileProcessing(), HttpStatus.CONFLICT);
+            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.CONFLICT);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
         }
     }
 
@@ -188,16 +198,22 @@ public class IMCController {
 
             String validationError = validate(itemJSON);
             if (!validationError.equals("")) {
-                return new ResponseEntity(validationError, HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity(validationError, HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             int id = 0;
             try {
                 id = mapper.readTree(itemJSON).findValue(idName).asInt();
             } catch (Exception e) {
-                return new ResponseEntity<>(errorInvalidId(), HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorInvalidId(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             if (id == 0) {
-                return new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             // Hack -  because they dont want to resolve new/existing actions in component wrappers
             if (!entityExists(id, resource, sourceName)) {
@@ -208,7 +224,9 @@ public class IMCController {
             return returnAfterPUT();
         } catch (Exception e) {
             logger.error(exceptionThrown, e);
-            return new ResponseEntity(errorWhileProcessing(), HttpStatus.CONFLICT);
+            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.CONFLICT);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
         }
     }
 
@@ -220,10 +238,14 @@ public class IMCController {
         String resource = Item;
         try {
             if (id == 0) {
-                return new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             if (!entityExists(id, resource, sourceName)) {
-                return new ResponseEntity<>(errorEntityDoesNotExist(id), HttpStatus.CONFLICT);
+                ResponseEntity<String> ret = new ResponseEntity<>(errorEntityDoesNotExist(id), HttpStatus.CONFLICT);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
             }
             List<Message> messages = parseMessages(resource, nameDELETEAction);
             sendDELETEMessages(messages, id, resource, sourceName);
@@ -233,7 +255,9 @@ public class IMCController {
 
         } catch (Exception e) {
             logger.info(exceptionThrown, e);
-            return new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
+            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
         }
     }
 
@@ -271,7 +295,7 @@ public class IMCController {
             }
             // response ok
             if (response.getStatusCode().equals(HttpStatus.OK)
-                    && isMapped(message.getTargetComponentName())) {
+                    && shouldBeMapped(message.getTargetComponentName())) {
                 String responseJson = response.getBody();
                 if (responseJson != null) {
                     int returnedId = 0;
@@ -293,7 +317,9 @@ public class IMCController {
 
     private ResponseEntity<String> returnAfterPOST() {
         if (errorHolder.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.CREATED);
+            ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.CREATED);
+            logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+            return ret;
         } else {
             ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
             errorHolder.clear();
@@ -338,7 +364,9 @@ public class IMCController {
 
     private ResponseEntity<String> returnAfterPUT() {
         if (errorHolder.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.OK);
+            logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+            return ret;
         } else {
             ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
             errorHolder.clear();
@@ -377,7 +405,9 @@ public class IMCController {
 
     private ResponseEntity<String> returnAfterDELETE() {
         if (errorHolder.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.OK);
+            ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.OK);
+            logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+            return ret;
         } else {
             ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
             errorHolder.clear();
@@ -413,7 +443,11 @@ public class IMCController {
 
     private String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) {
         try {
-            return jsonUtil.shiftEnumIdsInJSON(originalJSON, resourceName, sourceComponentName, targetComponentName);
+            if(shouldBeMapped(targetComponentName))
+                return jsonUtil.shiftEnumIdsInJSON(originalJSON, resourceName, sourceComponentName, targetComponentName);
+            else {
+                return jsonUtil.deleteEnumIdsFromJSON(originalJSON, resourceName);
+            }
         } catch (Exception e) {
             logger.error(errorWhileShiftingEnumIds, e);
             errorHolder.add(errorWhileShiftingEnumIds(e));
@@ -425,9 +459,13 @@ public class IMCController {
             String resourceName,
             String sourceComponentName, String targetComponentName) {
         try {
+            if(!shouldBeMapped(targetComponentName))
+                return;
             List<Enum> enums = getMappedEnums(resourceName);
             for (Enum enume : enums) {
                 int enumeSourceId = jsonUtil.getEnumId(originalJSON, enume.getIdName());
+                if(enumeSourceId == 0)
+                    continue;
                 boolean exists = entityExists(enumeSourceId, enume.getTableName(), sourceComponentName);
                 boolean isMapped = isMapped(enumeSourceId, enume.getTableName(), sourceComponentName, targetComponentName);
                 if (exists && isMapped) {
@@ -440,10 +478,17 @@ public class IMCController {
                 }
                 // Vyzadej si textovou reprezentaci od source
                 Message getRepresentation = new Message(nameGETAction, enume.getTableName(), sourceComponentName, null);
-                String enumTextRepresentation = sendMessage(getRepresentation, enumeSourceId).getBody();                
+                logger.info(sendingMessage + getRepresentation.getTargetComponentName() + "/"
+                        + getRepresentation.getResourceName() + "/" + enumeSourceId + " \n" + getRepresentation.getAction());
+                String enumTextRepresentation = sendMessage(getRepresentation, enumeSourceId).getBody();
+                logger.info(messageResponse + enumTextRepresentation);
+                                
                 // Posli ji do targetu
                 Message postRepresentation = new Message(namePOSTAction, enume.getTableName(), targetComponentName, null);
+                logger.info(sendingMessage + postRepresentation.getTargetComponentName() + "/"
+                        + postRepresentation.getResourceName() + "/" + enumeSourceId + " \n" + postRepresentation.getAction());
                 String idInTarget = sendMessage(postRepresentation, enumTextRepresentation).getBody();
+                logger.info(messageResponse + idInTarget);
                 int returnedId = mapper.readTree(idInTarget).findValue(idName).asInt();
                 // Updatni id targetu v databazi
                 updateMappedEntity(enume.getTableName(), targetComponentName, returnedId, sourceComponentName, enumeSourceId);
@@ -530,7 +575,7 @@ public class IMCController {
         return Json;
     }
 
-    private boolean isMapped(String componentName) {
+    private boolean shouldBeMapped(String componentName) {
         for (Component c : getMappedComponents()) {
             if (c.getComponentName().equals(componentName)) {
                 return true;

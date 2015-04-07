@@ -23,20 +23,19 @@ import philharmonic.service.IMCService;
  * @author Kookie
  */
 public class JsonUtil {
-    
+
     private ObjectMapper mapper;
-    
+
     @Autowired
     private MappedEntityIdResolver resolver;
-    
+
     @Autowired
     private IMCService service;
 
     public JsonUtil() {
         mapper = new ObjectMapper();
     }
-    
-    
+
     /*
      * Take originalJSON, get its entity from DB
      * remove original ID from JSON and put there ID of targetComponent instead
@@ -48,83 +47,88 @@ public class JsonUtil {
         JSONObject jo = new JSONObject(originalJSON);
         jo.remove(idName);
         if (entity == null) {
-            jo.put(idName, 0);            
-        }
-        else {
+            jo.put(idName, 0);
+        } else {
             int targetId = resolver.getIdValue(entity, targetComponentName);
             jo.put(idName, targetId);
         }
         return jo.toString();
     }
-    
+
     public int getResourceIdInTarget(int sourceId, String resourceName, String sourceComponentName, String targetComponentName) {
         MappedEntity entity = service.getMappedEntity(sourceId, resourceName, sourceComponentName);
         if (entity == null) {
-            return 0;            
-        }
-        else {
+            return 0;
+        } else {
             return resolver.getIdValue(entity, targetComponentName);
         }
     }
 
-    
     /*
      * For each mapped enum defined in MappingConstants
      * remove original enum ID from JSON and put there ID of enum in targetComponent instead
      * return changed JSON
      */
     public String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName)
-            throws JSONException, IOException
-    {
+            throws JSONException, IOException {
         JSONObject jo = new JSONObject(originalJSON);
         for (Enum enume : getMappedEnums(resourceName)) {
             JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
-            if(stringId == null) {
+            if (stringId == null) {
                 continue;
             }
             int sourceId = stringId.asInt();
             jo.remove(enume.getIdName());
-            // vezmi si z databaze ten enum
             MappedEntity entity = service.getMappedEntity(sourceId, enume.getTableName(), sourceComponentName);
-            // enum v databazi neexistuje
-            // zeptej se zdroje na jeho textovou reprezentaci, posli ji cili, namapuj si ji a pak pokracuj
-            if(entity == null) {
+
+            if (entity == null) {
                 jo.put(enume.getIdName(), 0);
-            }
-            else {
-                int targetId = resolver.getIdValue(entity, targetComponentName);            
+            } else {
+                int targetId = resolver.getIdValue(entity, targetComponentName);
                 jo.put(enume.getIdName(), targetId);
-            }            
+            }
         }
         return jo.toString();
     }
-    
+
+    public String deleteEnumIdsFromJSON(String originalJSON, String resourceName)
+            throws JSONException, IOException {
+        JSONObject jo = new JSONObject(originalJSON);
+        for (Enum enume : getMappedEnums(resourceName)) {
+            JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
+            if (stringId == null) {
+                continue;
+            }
+            jo.remove(enume.getIdName());
+        }
+        return jo.toString();
+    }
+
     /*
      * Remove original ID from JSON and put there ID 0 instead
      * return changed JSON
      */
     public String nullResourceIdInJSON(String originalJSON, String resourceIdName)
-            throws JSONException
-    {
+            throws JSONException {
         JSONObject jo = new JSONObject(originalJSON);
         jo.remove(resourceIdName);
         jo.put(resourceIdName, 0);
         return jo.toString();
     }
-    
+
     public String addResourceIdToJSON(String originalJSON, String componentName, int idValue)
-            throws JSONException
-    {
+            throws JSONException {
         JSONObject jo = new JSONObject(originalJSON);
         jo.put(resolver.getIdName(componentName), idValue);
         return jo.toString();
     }
-    
-    
+
     public int getEnumId(String JSON, String enumIdName) throws IOException {
         JsonNode stringId = mapper.readTree(JSON).findValue(enumIdName);
-        if(stringId == null) return 0;
-        else
+        if (stringId == null) {
+            return 0;
+        } else {
             return stringId.asInt();
+        }
     }
 }
