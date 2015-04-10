@@ -230,27 +230,37 @@ public class IMCController {
         }
     }
 
-    @RequestMapping(value = resourceAddressItem + "/{id}", method = RequestMethod.DELETE)
+    
+    @RequestMapping(value = {resourceAddressItem + "/{id}", resourceAddressItem + "/", resourceAddressItem}, method = RequestMethod.DELETE)
     @ResponseBody
-    public ResponseEntity<String> deleteItem(@PathVariable("id") int id) {
+    public ResponseEntity<String> deleteItem(@PathVariable("id") String id) {
         logger.info(invokingItemDELETE + " with id " + id);
         String sourceName = rudolfComponentName;
         String resource = Item;
         try {
-            if (id == 0) {
+            int idInt = 0;
+            try {
+                idInt = Integer.parseInt(id);
+            }
+            catch(Exception e) {
                 ResponseEntity<String> ret = new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
                 logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
                 return ret;
             }
-            if (!entityExists(id, resource, sourceName)) {
-                ResponseEntity<String> ret = new ResponseEntity<>(errorEntityDoesNotExist(id), HttpStatus.CONFLICT);
+            if (idInt == 0) {
+                ResponseEntity<String> ret = new ResponseEntity<>(errorId0(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                return ret;
+            }
+            if (!entityExists(idInt, resource, sourceName)) {
+                ResponseEntity<String> ret = new ResponseEntity<>(errorEntityDoesNotExist(idInt), HttpStatus.CONFLICT);
                 logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
                 return ret;
             }
             List<Message> messages = parseMessages(resource, nameDELETEAction);
-            sendDELETEMessages(messages, id, resource, sourceName);
+            sendDELETEMessages(messages, idInt, resource, sourceName);
 
-            deleteEntity(id, resource, sourceName);
+            deleteEntity(idInt, resource, sourceName);
             return returnAfterDELETE();
 
         } catch (Exception e) {
@@ -395,7 +405,7 @@ public class IMCController {
                 logger.info(anotherTargetException + message.getTargetComponentName(), e);
                 errorHolder.add(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             }
-            logger.info(messageResponse + response);
+
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 logger.info(httpClientErrorException + message.getTargetComponentName());
                 errorHolder.add(httpClientErrorException + message.getTargetComponentName());
@@ -474,19 +484,20 @@ public class IMCController {
                 if (!exists) {
                     MappedEntity enumToSave = new MappedEntity();
                     resolver.setId(enumToSave, enumeSourceId, sourceComponentName);
-                    saveMappedEntity(enumToSave, resourceName);
+                    saveMappedEntity(enumToSave, enume.getTableName());
                 }
                 // Vyzadej si textovou reprezentaci od source
                 Message getRepresentation = new Message(nameGETAction, enume.getTableName(), sourceComponentName, null);
                 logger.info(sendingMessage + getRepresentation.getTargetComponentName() + "/"
-                        + getRepresentation.getResourceName() + "/" + enumeSourceId + " \n" + getRepresentation.getAction());
+                        + getRepresentation.getResourceName() + "/" + enumeSourceId + " [" + getRepresentation.getAction() + "]");
                 String enumTextRepresentation = sendMessage(getRepresentation, enumeSourceId).getBody();
                 logger.info(messageResponse + enumTextRepresentation);
                                 
                 // Posli ji do targetu
                 Message postRepresentation = new Message(namePOSTAction, enume.getTableName(), targetComponentName, null);
                 logger.info(sendingMessage + postRepresentation.getTargetComponentName() + "/"
-                        + postRepresentation.getResourceName() + "/" + enumeSourceId + " \n" + postRepresentation.getAction());
+                        + postRepresentation.getResourceName() + " \n" + postRepresentation.getAction() +
+                        " \n" + enumTextRepresentation);
                 String idInTarget = sendMessage(postRepresentation, enumTextRepresentation).getBody();
                 logger.info(messageResponse + idInTarget);
                 int returnedId = mapper.readTree(idInTarget).findValue(idName).asInt();

@@ -20,7 +20,6 @@ import static philharmonic.resources.StringConstants.*;
  *
  * @author Kookie
  */
-
 public class MessageSender {
 
     private RestTemplate rt;
@@ -56,18 +55,13 @@ public class MessageSender {
         URI = new AddressesParser("Components.xml").getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName() + "/" + id;
 
-        try {
-            if (message.getAction().equals(nameDELETEAction)) {
-                rt.delete(URI);
-            }
-            if (message.getAction().equals(nameGETAction)) {
-                return rt.getForEntity(URI, String.class);
-            }
-        } catch (Exception e) {
-            return new ResponseEntity(HttpStatus.CONFLICT);
+        if (message.getAction().equals(nameDELETEAction)) {
+            rt.delete(URI);
+        }
+        if (message.getAction().equals(nameGETAction)) {
+            return rt.getForEntity(URI, String.class);
         }
         return new ResponseEntity(HttpStatus.OK);
 
     }
 }
-

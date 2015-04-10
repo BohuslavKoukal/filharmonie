@@ -33,39 +33,41 @@ public class IDaoImpl implements IDao {
 
     @Override
     public void create(MappedEntity entity, String tableName) {
-
-        String idNames = "";
-        for (Component c : getMappedComponents()) {
-            if(!valueIs0(entity, c)) {
-                idNames += c.getIdName();
-            // if this is not last element
-                if (!c.getComponentName().equals(
-                    getMappedComponents().get(getMappedComponents().size() - 1).getComponentName())) {
-                    idNames += ", ";
-                }
-            }
-            
-
-        }
-
-        String idValues = "";
-        for (Component c : getMappedComponents()) {
-            if(!valueIs0(entity, c)) {
-                idValues += resolver.getIdValue(entity, c.getComponentName());
-                // if this is not last element
-                if (!c.getComponentName().equals(
-                        getMappedComponents().get(getMappedComponents().size() - 1).getComponentName())) {
-                    idValues += ", ";
-                }
-            }
-            
-        }
+        
+        String idNames = buildIdNames(entity);
+        String idValues = buildIdValues(entity);
+        
+        
         jt.update("INSERT INTO " + tableName + "(" + idNames + ")"
                 + " VALUES(" + idValues + ")");
     }
     
     private boolean valueIs0(MappedEntity entity, Component c) {
         return resolver.getIdValue(entity, c.getComponentName()) == 0;
+    }
+    
+    private String buildIdNames(MappedEntity entity) {
+        String ret = "";        
+        for (Component c : getMappedComponents()) {
+            if(!valueIs0(entity, c)) {
+                ret += c.getIdName() + ", ";                
+            }
+        }
+        if(ret.substring(ret.length()-2).equals(", "))
+            ret = ret.substring(0, ret.length()-2);
+        return ret;
+    }
+    
+    private String buildIdValues(MappedEntity entity) {
+        String ret = "";        
+        for (Component c : getMappedComponents()) {
+            if(!valueIs0(entity, c)) {
+                ret += resolver.getIdValue(entity, c.getComponentName()) + ", ";
+            }            
+        }
+        if(ret.substring(ret.length()-2).equals(", "))
+            ret = ret.substring(0, ret.length()-2);
+        return ret;
     }
 
     @Override
