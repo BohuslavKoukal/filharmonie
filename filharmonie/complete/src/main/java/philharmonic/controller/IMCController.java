@@ -39,7 +39,9 @@ import static philharmonic.resources.mapping.EnumMapping.getMappedEnums;
 @RequestMapping(addressMiddleComponent)
 public class IMCController {
 
+    @Autowired
     private RestTemplate rt;
+    
     private ObjectMapper mapper;
     private List errorHolder;
 
@@ -61,7 +63,6 @@ public class IMCController {
     private IMCService service;
 
     public IMCController() {
-        rt = new RestTemplate();
         mapper = new ObjectMapper();
         errorHolder = new ArrayList<>();
     }
@@ -563,7 +564,7 @@ public class IMCController {
         }
     }
 
-    private ResponseEntity<String> sendMessage(Message message, String body) throws ParserConfigurationException, SAXException, IOException {
+    private ResponseEntity<String> sendMessage(Message message, String body)  {
         return sender.sendMessage(message, body);
     }
 

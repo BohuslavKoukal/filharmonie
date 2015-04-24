@@ -11,10 +11,12 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import philharmonic.controller.IMCController;
 import philharmonic.dao.IDao;
 import philharmonic.dao.IDaoImpl;
+import philharmonic.utilities.AddressesParser;
 import philharmonic.utilities.JsonUtil;
 import philharmonic.utilities.MappedEntityIdResolver;
 import philharmonic.utilities.MessageSender;
@@ -36,11 +38,20 @@ public class IMCControllerTestConfig extends WebMvcConfigurerAdapter {
     public MessagesParser parser() {
         return Mockito.mock(MessagesParser.class);
     }
-        
+     
+    @Bean
+    public AddressesParser AddressesParser() throws Exception {
+        return Mockito.mock(AddressesParser.class);
+    }
     
     @Bean
     public MessageSender sender() {
         return Mockito.mock(MessageSender.class);
+    }
+    
+    @Bean
+    public RestTemplate RestTemplate() {
+        return new RestTemplate();
     }
     
     @Bean

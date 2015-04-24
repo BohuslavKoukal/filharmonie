@@ -7,10 +7,6 @@
     <artifactId>filharmonie</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
-    
-    <!--properties>
-        <start-class>filharmonie.philharmonic.Application</start-class>
-    </properties-->
 
 
     <parent>
@@ -24,10 +20,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!--dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency-->
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -68,14 +61,13 @@
             <version>20090211</version>
         </dependency>
         
-        <!-- Mail -->
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.4</version>
-        </dependency>
+        <!-- Authentication -->
 
-        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>1.2.2.RELEASE</version>
+        </dependency>
         <!--Testing-->
         <dependency>
             <groupId>org.hamcrest</groupId>

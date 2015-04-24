@@ -7,6 +7,7 @@ package philharmonic.utilities;
 
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -22,20 +23,20 @@ import static philharmonic.resources.StringConstants.*;
  */
 public class MessageSender {
 
+    @Autowired
     private RestTemplate rt;
-
+    
+    @Autowired
+    private AddressesParser parser;
+    
     public MessageSender() {
-        rt = new RestTemplate();
+
     }
 
-    public MessageSender(RestTemplate rt) {
-        this.rt = rt;
-    }
-
-    public ResponseEntity<String> sendMessage(Message message, String body) throws ParserConfigurationException, SAXException, IOException {
+    public ResponseEntity<String> sendMessage(Message message, String body) {
         String target = message.getTargetComponentName();
         String URI;
-        URI = new AddressesParser("Components.xml").getAddressForComponent(target)
+        URI = parser.getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName();
 
         HttpEntity entity = new HttpEntity(body);
@@ -49,19 +50,20 @@ public class MessageSender {
         return null;
     }
 
-    public ResponseEntity<String> sendMessage(Message message, int id) throws ParserConfigurationException, SAXException, IOException {
+    public ResponseEntity<String> sendMessage(Message message, int id) {
         String target = message.getTargetComponentName();
         String URI;
-        URI = new AddressesParser("Components.xml").getAddressForComponent(target)
+        URI = parser.getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName() + "/" + id;
 
         if (message.getAction().equals(nameDELETEAction)) {
             rt.delete(URI);
+            return new ResponseEntity(HttpStatus.OK);
         }
         if (message.getAction().equals(nameGETAction)) {
             return rt.getForEntity(URI, String.class);
         }
-        return new ResponseEntity(HttpStatus.OK);
+        return null;
 
     }
 }
