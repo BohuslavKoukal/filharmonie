@@ -5,13 +5,10 @@
 package philharmonic;
 
 
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
-import org.xml.sax.SAXException;
 import philharmonic.utilities.AddressesParser;
 import philharmonic.utilities.JsonUtil;
 import philharmonic.utilities.MappedEntityIdResolver;

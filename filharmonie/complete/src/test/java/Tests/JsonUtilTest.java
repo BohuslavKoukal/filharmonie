@@ -70,6 +70,8 @@ public class JsonUtilTest {
         me.id = 12; me.idOrchestr = 12; me.idRudolf = 12;
         when(serviceMock.getMappedEntity(eq(1), anyString(), anyString()))
                 .thenReturn(me);
+        when(serviceMock.shouldBeMapped(anyString()))
+                .thenReturn(true);
         String shifted = testee.shiftResourceIdsInJSON(JSON, CPAction, orchestrComponentName, rudolfComponentName);
         JSONObject jo = new JSONObject(shifted);
         int idValue = jo.getInt("id");

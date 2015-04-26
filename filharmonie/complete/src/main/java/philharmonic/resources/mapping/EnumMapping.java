@@ -19,6 +19,7 @@ public class EnumMapping {
     public static final Enum place = new Enum("EnumPlace", "placeId");
     public static final Enum category = new Enum("EnumCategory", "categoryId");
     public static final Enum cycle = new Enum("EnumCycle", "cycleId");
+    public static final Enum organizer = new Enum("EnumOrganizer", "organizerId");
     public static final Enum itemSubject = new Enum("EnumItemSubject", "itemSubjectId");
 
     // Intersystem mapping enums
@@ -31,6 +32,15 @@ public class EnumMapping {
                         add(place);
                         add(category);
                         add(cycle);
+                    }
+                };
+            case "ExternalAction":
+                return new ArrayList<Enum>() {
+                    {
+                        add(place);
+                        add(category);
+                        add(cycle);
+                        add(organizer);
                     }
                 };
             case "Item":

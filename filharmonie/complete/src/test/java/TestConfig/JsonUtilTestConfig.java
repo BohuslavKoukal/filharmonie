@@ -18,8 +18,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import philharmonic.dao.IDao;
 import philharmonic.dao.IDaoImpl;
+import philharmonic.utilities.AddressesParser;
 import philharmonic.utilities.MappedEntityIdResolver;
 import philharmonic.utilities.JsonUtil;
+import philharmonic.utilities.MessageSender;
+import philharmonic.utilities.MessagesParser;
 /**
  *
  * @author Kookie
@@ -59,6 +62,19 @@ public class JsonUtilTestConfig {
         return Mockito.mock(IDaoImpl.class);
     }
     
-
+    @Bean
+    public AddressesParser AddressesParser() throws Exception {
+        return Mockito.mock(AddressesParser.class);
+    }
+    
+    @Bean
+    public MessagesParser parser() {
+        return Mockito.mock(MessagesParser.class);
+    }
+    
+@Bean
+    public MessageSender sender() {
+        return Mockito.mock(MessageSender.class);
+    }
     
 }

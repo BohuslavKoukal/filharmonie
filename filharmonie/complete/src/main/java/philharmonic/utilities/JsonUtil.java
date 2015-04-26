@@ -42,17 +42,21 @@ public class JsonUtil {
      * return changed JSON
      */
     public String shiftResourceIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
-        int sourceId = mapper.readTree(originalJSON).findValue(idName).asInt();
-        MappedEntity entity = service.getMappedEntity(sourceId, resourceName, sourceComponentName);
+        int sourceId = mapper.readTree(originalJSON).findValue(idName).asInt();                
         JSONObject jo = new JSONObject(originalJSON);
         jo.remove(idName);
+        if(!service.shouldBeMapped(targetComponentName)) {
+            return addResourceIdToJSON(jo.toString(), sourceComponentName, sourceId);
+        }
+        
+        MappedEntity entity = service.getMappedEntity(sourceId, resourceName, sourceComponentName);
         if (entity == null) {
             jo.put(idName, 0);
         } else {
             int targetId = resolver.getIdValue(entity, targetComponentName);
             jo.put(idName, targetId);
         }
-        return jo.toString();
+        return jo.toString();  
     }
 
     public int getResourceIdInTarget(int sourceId, String resourceName, String sourceComponentName, String targetComponentName) {
@@ -91,18 +95,18 @@ public class JsonUtil {
         return jo.toString();
     }
 
-    public String deleteEnumIdsFromJSON(String originalJSON, String resourceName)
-            throws JSONException, IOException {
-        JSONObject jo = new JSONObject(originalJSON);
-        for (Enum enume : getMappedEnums(resourceName)) {
-            JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
-            if (stringId == null) {
-                continue;
-            }
-            jo.remove(enume.getIdName());
-        }
-        return jo.toString();
-    }
+//    public String deleteEnumIdsFromJSON(String originalJSON, String resourceName)
+//            throws JSONException, IOException {
+//        JSONObject jo = new JSONObject(originalJSON);
+//        for (Enum enume : getMappedEnums(resourceName)) {
+//            JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
+//            if (stringId == null) {
+//                continue;
+//            }
+//            jo.remove(enume.getIdName());
+//        }
+//        return jo.toString();
+//    }
 
     /*
      * Remove original ID from JSON and put there ID 0 instead

@@ -5,15 +5,14 @@
  */
 package philharmonic.utilities;
 
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.xml.sax.SAXException;
 import philharmonic.model.Message;
 import static philharmonic.resources.StringConstants.*;
 
@@ -23,14 +22,14 @@ import static philharmonic.resources.StringConstants.*;
  */
 public class MessageSender {
 
-    @Autowired
+    
     private RestTemplate rt;
     
     @Autowired
     private AddressesParser parser;
     
     public MessageSender() {
-
+        rt = new RestTemplate();
     }
 
     public ResponseEntity<String> sendMessage(Message message, String body) {
@@ -39,7 +38,7 @@ public class MessageSender {
         URI = parser.getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName();
 
-        HttpEntity entity = new HttpEntity(body);
+        HttpEntity entity = new HttpEntity(body, createHeaders(target));
         if (message.getAction().equals(namePOSTAction)) {
             return rt.exchange(URI, HttpMethod.POST, entity, String.class);
         }
@@ -55,15 +54,23 @@ public class MessageSender {
         String URI;
         URI = parser.getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName() + "/" + id;
-
+        HttpEntity entity = new HttpEntity(createHeaders(target));
         if (message.getAction().equals(nameDELETEAction)) {
-            rt.delete(URI);
-            return new ResponseEntity(HttpStatus.OK);
+            return rt.exchange(URI, HttpMethod.DELETE, entity, String.class);
         }
         if (message.getAction().equals(nameGETAction)) {
-            return rt.getForEntity(URI, String.class);
+            return rt.exchange(URI, HttpMethod.GET, entity, String.class);
         }
         return null;
-
+    }
+    
+    private MultiValueMap createHeaders(String component) {
+        String plainCreds = parser.getAuthorizationForComponent(component);
+        byte[] plainCredsBytes = plainCreds.getBytes();
+        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+        String base64Creds = new String(base64CredsBytes);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Basic " + base64Creds);
+        return headers;
     }
 }

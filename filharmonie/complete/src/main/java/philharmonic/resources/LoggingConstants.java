@@ -15,9 +15,13 @@ public class LoggingConstants {
     public static final String returning = "Returning: \n";
     public static final String invokingCPActionPOST = "CPAction POST was called \n";
     public static final String invokingCPActionPUT = "CPAction PUT was called \n";
+    public static final String invokingExternalActionPOST = "ExternalAction POST was called \n";
+    public static final String invokingExternalActionPUT = "ExternalAction PUT was called \n";
     public static final String invokingItemPUT = "Item PUT was called \n";
     public static final String invokingItemPOST = "Item POST was called \n";
     public static final String invokingItemDELETE = "Item DELETE was called \n";
+    public static final String redirectingToPOST = "Entity does not exist => Redirecting to POST \n";
+    public static final String finish = "\n################################################################## \n\n\n\n";
     
     
     public static final String errorWhileDeletingResourceId = "There was an error while trying to remove resource id. ";

@@ -16,6 +16,7 @@ public class MappedEntity {
     public int idRudolf;
     public int idTicketing;
     public int idTeplo;
+    public int idWeb;
     
     @Override
     public int hashCode() {
@@ -25,6 +26,7 @@ public class MappedEntity {
         hash = 17 * hash + this.idRudolf;
         hash = 17 * hash + this.idTicketing;
         hash = 17 * hash + this.idTeplo;
+        hash = 17 * hash + this.idWeb;
         return hash;
     }
     

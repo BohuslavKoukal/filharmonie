@@ -68,6 +68,8 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>1.2.2.RELEASE</version>
         </dependency>
+        
+
         <!--Testing-->
         <dependency>
             <groupId>org.hamcrest</groupId>

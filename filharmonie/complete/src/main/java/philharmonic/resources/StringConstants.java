@@ -7,10 +7,6 @@ package philharmonic.resources;
 import java.util.ArrayList;
 import java.util.List;
 import philharmonic.model.Component;
-import static philharmonic.resources.mapping.EnumMapping.category;
-import static philharmonic.resources.mapping.EnumMapping.cycle;
-import static philharmonic.resources.mapping.EnumMapping.itemSubject;
-import static philharmonic.resources.mapping.EnumMapping.place;
 
 /**
  *
@@ -34,6 +30,9 @@ public class StringConstants {
     public static final String teploComponentName = "teplo";
     public static final String teploComponentIdName = "idTeplo";
     
+    public static final String webComponentName = "web";
+    public static final String webComponentIdName = "idWeb";
+    
     public static final String mailerComponentName = "mailer";
     
     // Component addressing
@@ -43,6 +42,7 @@ public class StringConstants {
     public static final String addressTicketingComponent = "/" + ticketingComponentName;
     public static final String addressTeploComponent = "/" + teploComponentName;
     public static final String addressMailerComponent = "/" + mailerComponentName;
+    public static final String addressWebComponent = "/" + webComponentName;
     
     // Intersystem mapping components
     public static final List<Component> getMappedComponents() {
@@ -52,6 +52,7 @@ public class StringConstants {
                 add(new Component(rudolfComponentName, rudolfComponentIdName));
                 add(new Component(ticketingComponentName, ticketingComponentIdName));
                 add(new Component(teploComponentName, teploComponentIdName));
+                add(new Component(webComponentName, webComponentIdName));
             }
         };
     }
@@ -60,13 +61,14 @@ public class StringConstants {
     // Resource names    
     public static final String CPAction = "CPAction";
     public static final String Item = "Item";
+    public static final String ExternalAction = "ExternalAction";
     
     public static final String idName = "id";
     
     // Resource addressing  
     public static final String resourceAddressCPAction = "/" + CPAction;
     public static final String resourceAddressItem = "/" + Item;
-    
+    public static final String resourceAddressExternalAction = "/" + ExternalAction;
     
     
     // REST actions names

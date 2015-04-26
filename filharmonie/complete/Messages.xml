@@ -44,4 +44,70 @@
                 </target>                
             </action>        
         </resource>
+        <resource name="CPAction">
+            <action name="POST">
+                <source>
+                    <name>orchestr</name>
+                </source>
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                    <!-- this can be set only in POST -->
+                    <needsIdOf>ticketing</needsIdOf>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>orchestr</name>
+                </source>
+                <target>
+                    <name>rudolf</name>
+                </target>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+            </action>
+        </resource>
+        
+        <resource name="ExternalAction">
+            <action name="POST">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>web</name>
+                    <!-- this can be set only in POST -->
+                    <needsIdOf>ticketing</needsIdOf>
+                </target>
+            </action>
+
+            <action name="PUT">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                </target>
+                <target>
+                    <name>web</name>
+                </target>
+            </action>
+        </resource>
+
+
 </component>

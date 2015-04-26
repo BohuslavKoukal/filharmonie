@@ -41,19 +41,10 @@ public class EntityResultSetExtractor implements ResultSetExtractor {
                     resolver.setId(entity, idToSet, component.getComponentName());
                 }
                 catch (Exception e) {
-                    // setting id for all components needs to be changed in enums
+                    // means that not all components are mapped in this table - it is a feature, not a bug
                 }
                 
             }
-
-        
-
-        
-        
-//        entity.setIdOrchestr((int) rs.getLong("idOrchestr"));
-//        entity.setIdRudolf((int) rs.getLong("idRudolf"));
-//        entity.setIdTicketing((int) rs.getLong("idTicketing"));
-//        entity.setIdWeb((int) rs.getLong("idWeb"));
         
         return entity;
     }
