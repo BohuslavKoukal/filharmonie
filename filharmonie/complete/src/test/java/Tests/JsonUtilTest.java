@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import philharmonic.model.MappedEntity;
 import static philharmonic.resources.StringConstants.*;
+import static philharmonic.resources.mapping.EnumMapping.*;
 import philharmonic.service.IMCService;
 import philharmonic.utilities.JsonUtil;
 
@@ -63,11 +64,13 @@ public class JsonUtilTest {
         int idValue = jo.getInt("id");
         assertSame(0, idValue);
     }
-    
+
     @Test
     public void shiftResourceIds_returnsJSONWithShiftedIds() throws JSONException, IOException {
         MappedEntity me = new MappedEntity();
-        me.id = 12; me.idOrchestr = 12; me.idRudolf = 12;
+        me.id = 12;
+        me.idOrchestr = 12;
+        me.idRudolf = 12;
         when(serviceMock.getMappedEntity(eq(1), anyString(), anyString()))
                 .thenReturn(me);
         when(serviceMock.shouldBeMapped(anyString()))
@@ -77,11 +80,13 @@ public class JsonUtilTest {
         int idValue = jo.getInt("id");
         assertSame(12, idValue);
     }
-    
+
     @Test
     public void addResourceId_returnsJSONWithAddedIds() throws JSONException, IOException {
         MappedEntity me = new MappedEntity();
-        me.id = 12; me.idOrchestr = 12; me.idRudolf = 12;
+        me.id = 12;
+        me.idOrchestr = 12;
+        me.idRudolf = 12;
         when(serviceMock.getMappedEntity(eq(1), anyString(), anyString()))
                 .thenReturn(me);
         String added = testee.addResourceIdToJSON(JSON, rudolfComponentName, 44);
@@ -92,13 +97,17 @@ public class JsonUtilTest {
         assertSame(44, idRudolf);
         assertSame(14, idOrchestr);
     }
-    
+
     @Test
     public void shiftEnumIds_returnsJSONWithCorrectlyShiftedEnumIds() throws JSONException, IOException {
         MappedEntity me1 = new MappedEntity();
-        me1.id = 120; me1.idOrchestr = 121; me1.idRudolf = 122;
+        me1.id = 120;
+        me1.idOrchestr = 121;
+        me1.idRudolf = 122;
         MappedEntity me2 = new MappedEntity();
-        me2.id = 30; me2.idOrchestr = 31; me2.idRudolf = 32;
+        me2.id = 30;
+        me2.idOrchestr = 31;
+        me2.idRudolf = 32;
         when(serviceMock.getMappedEntity(eq(12), anyString(), anyString()))
                 .thenReturn(me1);
         when(serviceMock.getMappedEntity(eq(3), anyString(), anyString()))
@@ -107,7 +116,30 @@ public class JsonUtilTest {
                 orchestrComponentName, rudolfComponentName);
         assertSame(122, new JSONObject(shifted).getInt("placeId"));
         assertSame(32, new JSONObject(shifted).getInt("categoryId"));
-        //assertSame(0, new JSONObject(shifted).getInt("cycleId"));
+    }
+
+    @Test
+    public void getResourceIdInTarget_returnsCorrectId() {
+        MappedEntity me1 = new MappedEntity();
+        me1.id = 10;
+        me1.idRudolf = 12;
+        me1.idWeb = 13;
+        when(serviceMock.getMappedEntity(12, ExternalAction, rudolfComponentName))
+                .thenReturn(me1);
+        when(serviceMock.getMappedEntity(100, ExternalAction, rudolfComponentName))
+                .thenReturn(null);
+        int id1 = testee.getResourceIdInTarget(12, ExternalAction, rudolfComponentName, webComponentName);
+        int id2 = testee.getResourceIdInTarget(100, ExternalAction, rudolfComponentName, ticketingComponentName);
+        assertSame(13, id1);
+        assertSame(0, id2);
+    }
+
+    @Test
+    public void getEnumId_returnsCorrectId() throws JSONException, IOException {
+        int id1 = testee.getEnumId(JSON, category.getIdName());
+        int id2 = testee.getEnumId(JSON, itemSubject.getIdName());
+        assertSame(3, id1);
+        assertSame(0, id2);
     }
 
 }

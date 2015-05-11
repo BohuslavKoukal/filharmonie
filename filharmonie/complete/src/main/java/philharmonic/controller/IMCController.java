@@ -68,6 +68,17 @@ public class IMCController {
         String resource = ExternalAction;
         return service.processPUTRequest(actionJSON, sourceName, resource);
     }
+    
+    @RequestMapping(value = {resourceAddressExternalAction + "/{id}", resourceAddressExternalAction + "/", resourceAddressExternalAction}, method = RequestMethod.DELETE)
+    @ResponseBody
+    public ResponseEntity<String> deleteExternalAction
+        (@PathVariable("id") String id, @RequestBody(required=false) String actionJSON) {
+        logger.info(invokingExternalActionDELETE + " with id " + id + " and body " + actionJSON);
+        String sourceName = rudolfComponentName;
+        String resource = ExternalAction;
+        return service.processDELETERequest(id, actionJSON, sourceName, resource);        
+    }
+    
 
     /**
      * *************************************************************************************************
@@ -90,13 +101,14 @@ public class IMCController {
         return service.processPUTRequest(itemJSON, sourceName, resource);
     }
 
-    @RequestMapping(value = {resourceAddressItem + "/{id}", resourceAddressItem + "/", resourceAddressItem}, method = RequestMethod.DELETE)
+    @RequestMapping(value = {resourceAddressItem + "/{id}"}, method = RequestMethod.DELETE)
     @ResponseBody
-    public ResponseEntity<String> deleteItem(@PathVariable("id") String id) {
+    public ResponseEntity<String> deleteItem
+        (@PathVariable("id") String id, @RequestBody(required=false) String itemJson) {
         logger.info(invokingItemDELETE + " with id " + id);
         String sourceName = rudolfComponentName;
         String resource = Item;
-        return service.processDELETERequest(id, sourceName, resource);
-        
+        return service.processDELETERequest(id, itemJson, sourceName, resource);        
     }
+    
 }

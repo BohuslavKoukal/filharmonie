@@ -107,6 +107,19 @@
                     <name>web</name>
                 </target>
             </action>
+            
+            <action name="DELETE">
+                <source>
+                    <name>rudolf</name>
+                </source>
+                <target>
+                    <name>ticketing</name>
+                </target>
+                <target>
+                    <name>mailer</name>
+                </target>
+            </action>
+
         </resource>
 
 

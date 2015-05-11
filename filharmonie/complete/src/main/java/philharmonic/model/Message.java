@@ -28,48 +28,35 @@ public class Message {
         this.neededIds = neededIds;
         
     }    
-    
 
-    public Message() {
-    }
-
-    
-    
     public String getAction() {
         return action;
-    }
-
-    public void setAction(String action) {
-        this.action = action;
     }
 
     public String getResourceName() {
         return resourceName;
     }
 
-    public void setResourceName(String resourceName) {
-        this.resourceName = resourceName;
-    }
-
     public String getTargetComponentName() {
         return targetComponentName;
-    }
-
-    public void setTargetComponentName(String targetComponentName) {
-        this.targetComponentName = targetComponentName;
     }
 
     public List<String> getNeededIds() {
         return neededIds;
     }
-
-    public void setNeededIds(List<String> neededIds) {
-        this.neededIds = neededIds;
+    
+    @Override
+    public int hashCode() {
+        return new StringBuilder().append(action).append(resourceName).append(targetComponentName)
+                .toString().hashCode();
     }
 
     
-    
-    
-    
-    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null)
+            return false;
+        Message m = (Message) o;
+        return(this.hashCode() == m.hashCode());
+    }
 }

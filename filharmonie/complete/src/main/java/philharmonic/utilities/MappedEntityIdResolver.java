@@ -15,6 +15,8 @@ import static philharmonic.resources.StringConstants.*;
 public class MappedEntityIdResolver {
     
     public int getIdValue(MappedEntity entity, String componentName) {
+        if(componentName == null)
+            return 0;
         switch (componentName) {
             case middleComponentName:
                 return entity.id;
@@ -56,6 +58,8 @@ public class MappedEntityIdResolver {
     }
     
     public String getIdName(String componentName) {
+        if(componentName == null)
+            return "";
         switch (componentName) {
             case middleComponentName:
                 return middleComponentIdName;

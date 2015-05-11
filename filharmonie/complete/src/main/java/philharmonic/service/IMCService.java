@@ -9,12 +9,10 @@ import org.springframework.stereotype.Service;
 import philharmonic.dao.IDao;
 import philharmonic.model.MappedEntity;
 import java.io.IOException;
-import java.util.ArrayList;
 import philharmonic.model.Message;
 import philharmonic.model.Enum;
 
 import java.util.List;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 
 import org.codehaus.jackson.JsonParser;
@@ -24,8 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
-import org.xml.sax.SAXException;
 import philharmonic.model.*;
 import philharmonic.utilities.*;
 import static philharmonic.resources.StringConstants.*;
@@ -45,7 +41,7 @@ public class IMCService {
     IDao dao;
 
     private ObjectMapper mapper;
-    private List errorHolder;
+    private ErrorHolder errorHolder;
 
     @Autowired
     private JsonUtil jsonUtil;
@@ -62,31 +58,13 @@ public class IMCService {
     private static final Logger logger = Logger.getLogger(IMCService.class);
 
 
-    public IMCService(IDao dao) {
-        this.dao = dao;
-        mapper = new ObjectMapper();
-        errorHolder = new ArrayList<>();
-    }
     
     public IMCService() {
         mapper = new ObjectMapper();
-        errorHolder = new ArrayList<>();
-    }
+        errorHolder = new ErrorHolder();
+    }  
     
-    
-    public void saveMappedResource(MappedEntity entity, String resourceName) {
-        if(entity == null) {
-            throw new IllegalArgumentException("MappedResource to save in db was null.");
-        }
-        if(resourceName == null)
-            throw new IllegalArgumentException("Name of resource(table) to save in db was null.");
-        if(resourceName.isEmpty())
-            throw new IllegalArgumentException("Name of resource(table) to save in db was empty.");
-        dao.create(entity, resourceName);
-    }
-    
-    
-    /*
+        /*
      * Returns MappedEntity for given id in given component in mapped table
      * if there are more entities with the same id, returns the first one
      * if there are no entities, returns null
@@ -101,28 +79,6 @@ public class IMCService {
             return null;
         return dao.get(id, resourceTableName, componentName);        
     }
-    
-   public void deleteEntity(int id, String resourceTableName, String componentName) {
-        if(id == 0)
-            return;
-        if(resourceTableName == null || componentName == null)
-            return;
-        if(resourceTableName.isEmpty() || componentName.isEmpty())
-            return;
-        dao.delete(id, resourceTableName, componentName);
-        
-    }
-   
-   public void updateEntity(String resourceTableName, String setColumn, int setId, String whereColumn, int whereId) {
-        if(whereId == 0)
-            return;
-        if(resourceTableName == null || setColumn == null || whereColumn == null)
-            return;
-        if(resourceTableName.isEmpty() || setColumn.isEmpty() || whereColumn.isEmpty())
-            return;
-        dao.update(resourceTableName, setColumn, setId, whereColumn, whereId);        
-    }
-   
    
    public ResponseEntity<String> processPOSTRequest(String JSON, String sourceName, String resource) {
         try {
@@ -207,8 +163,16 @@ public class IMCService {
         }
     }
     
-    public ResponseEntity<String> processDELETERequest(String id, String sourceName, String resource) {
+    
+    
+    public ResponseEntity<String> processDELETERequest(String id, String JSON, String sourceName, String resource) {
         try {
+            if(id == null || id.isEmpty()) {
+                ResponseEntity<String> ret = new ResponseEntity<>(errorInvalidId(), HttpStatus.BAD_REQUEST);
+                logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                logger.info(finish);
+                return ret;
+            }
             int idInt = 0;
             try {
                 idInt = Integer.parseInt(id);
@@ -224,6 +188,16 @@ public class IMCService {
                 logger.info(finish);
                 return ret;
             }
+            if(JSON != null && !JSON.isEmpty()) {
+                String validationError = validate(JSON);
+                if (!validationError.equals("")) {
+                    ResponseEntity<String> ret = new ResponseEntity(validationError, HttpStatus.BAD_REQUEST);
+                    logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
+                    logger.info(finish);
+                    return ret;
+                }
+            }
+            
             if (!entityExists(idInt, resource, sourceName)) {
                 ResponseEntity<String> ret = new ResponseEntity<>(errorEntityDoesNotExist(idInt), HttpStatus.CONFLICT);
                 logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
@@ -231,21 +205,21 @@ public class IMCService {
                 return ret;
             }
             List<Message> messages = parseMessages(resource, nameDELETEAction);
-            sendDELETEMessages(messages, idInt, resource, sourceName);
+            sendDELETEMessages(messages, idInt, JSON, resource, sourceName);
 
             deleteEntity(idInt, resource, sourceName);
             return returnAfterDELETE();
 
         } catch (Exception e) {
             logger.info(exceptionThrown, e);
-            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.BAD_REQUEST);
+            ResponseEntity<String> ret = new ResponseEntity(errorWhileProcessing(), HttpStatus.CONFLICT);
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
             return ret;
         }
     }
     
-    public void sendPOSTMessages(List<Message> messages, String JSON, String sourceName, String resource, MappedResource resourceToSave) {
+    private void sendPOSTMessages(List<Message> messages, String JSON, String sourceName, String resource, MappedResource resourceToSave) throws JSONException, IOException {
         for (Message message : messages) {
             assureConsistentEnums(JSON, resource, sourceName, message.getTargetComponentName());
             // shifting enum ids
@@ -268,13 +242,13 @@ public class IMCService {
                         + response.getBody());
             } catch (ResourceAccessException e) {
                 logger.info(resourceAccessException + message.getTargetComponentName(), e);
-                errorHolder.add(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (HttpClientErrorException e) {
                 logger.info(httpClientErrorException + message.getTargetComponentName(), e);
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (Exception e) {
                 logger.info(anotherTargetException + message.getTargetComponentName(), e);
-                errorHolder.add(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             }
             // response ok
             if (response.getStatusCode().equals(HttpStatus.OK)
@@ -286,26 +260,25 @@ public class IMCService {
                         returnedId = mapper.readTree(responseJson).findValue(idName).asInt();
                     } catch (Exception e) {
                         logger.error(responseBodyError + message.getTargetComponentName(), e);
-                        errorHolder.add(responseBodyError + message.getTargetComponentName() + e.getLocalizedMessage());
+                        errorHolder.addError(responseBodyError + message.getTargetComponentName() + e.getLocalizedMessage());
                     }
                     resolver.setId(resourceToSave, returnedId, message.getTargetComponentName());
                 }
             } else if (response.getStatusCode().equals(HttpStatus.CONFLICT)) {
                 logger.info(httpClientErrorException + message.getTargetComponentName());
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName());
             }
-
         }
     }
 
-    public ResponseEntity<String> returnAfterPOST() {
-        if (errorHolder.isEmpty()) {
+    private ResponseEntity<String> returnAfterPOST() throws JSONException {
+        if (errorHolder.getErrors().isEmpty()) {
             ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.CREATED);
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
             return ret;
         } else {
-            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
+            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder), HttpStatus.CONFLICT);
             errorHolder.clear();
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
@@ -313,7 +286,7 @@ public class IMCService {
         }
     }
 
-    public void sendPUTMessages(List<Message> messages, String JSON, String resource, String sourceName) {
+    private void sendPUTMessages(List<Message> messages, String JSON, String resource, String sourceName) throws JSONException, IOException {
         for (Message message : messages) {
             assureConsistentEnums(JSON, resource, sourceName, message.getTargetComponentName());
             String jsonToSend = shiftResourceIdsInJSON(JSON, resource, sourceName, message.getTargetComponentName());
@@ -331,30 +304,30 @@ public class IMCService {
                         + response.getBody());
             } catch (ResourceAccessException e) {
                 logger.info(resourceAccessException + message.getTargetComponentName(), e);
-                errorHolder.add(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (HttpClientErrorException e) {
                 logger.info(httpClientErrorException + message.getTargetComponentName(), e);
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (Exception e) {
                 logger.info(anotherTargetException + message.getTargetComponentName(), e);
-                errorHolder.add(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             }
             // response ok
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 logger.info(httpClientErrorException + message.getTargetComponentName());
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName());
             }
         }
     }
 
-    public ResponseEntity<String> returnAfterPUT() {
-        if (errorHolder.isEmpty()) {
+    private ResponseEntity<String> returnAfterPUT() throws JSONException {
+        if (errorHolder.getErrors().isEmpty()) {
             ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.OK);
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
             return ret;
         } else {
-            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
+            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder), HttpStatus.CONFLICT);
             errorHolder.clear();
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
@@ -362,8 +335,15 @@ public class IMCService {
         }
     }
 
-    public void sendDELETEMessages(List<Message> messages, int sourceId, String resource, String sourceName) throws JSONException, IOException {
+    private void sendDELETEMessages(List<Message> messages, int sourceId, String JSON, String resource, String sourceName) throws JSONException, IOException {
+        boolean hasBody = (JSON != null && !JSON.isEmpty());
         for (Message message : messages) {
+            String jsonToSend = "";
+            if(hasBody) {
+                assureConsistentEnums(JSON, resource, sourceName, message.getTargetComponentName());
+                jsonToSend = shiftEnumIdsInJSON(JSON, resource, sourceName, message.getTargetComponentName());
+            }
+            
             ResponseEntity<String> response = new ResponseEntity<>(HttpStatus.I_AM_A_TEAPOT);
             try {
                 int targetId = sourceId;
@@ -371,36 +351,36 @@ public class IMCService {
                     targetId = getResourceIdInTarget(sourceId, resource, sourceName, message.getTargetComponentName());
                 }
                 logger.info(sendingMessage + message.getTargetComponentName() + "/"
-                        + message.getResourceName() + "/" + targetId + message.getAction() + " \n");
-                response = sendMessage(message, targetId);
+                        + message.getResourceName() + "/" + targetId + message.getAction() + " \n" + jsonToSend);
+                response = sendMessage(message, targetId, jsonToSend);
                 logger.info(messageResponse + response.getStatusCode() + "\n"
                         + response.getBody());
             } catch (ResourceAccessException e) {
                 logger.info(resourceAccessException + message.getTargetComponentName(), e);
-                errorHolder.add(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(resourceAccessException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (HttpClientErrorException e) {
                 logger.info(httpClientErrorException + message.getTargetComponentName(), e);
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             } catch (Exception e) {
                 logger.info(anotherTargetException + message.getTargetComponentName(), e);
-                errorHolder.add(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
+                errorHolder.addError(anotherTargetException + message.getTargetComponentName() + ": " + e.getLocalizedMessage());
             }
 
             if (!response.getStatusCode().equals(HttpStatus.OK)) {
                 logger.info(httpClientErrorException + message.getTargetComponentName());
-                errorHolder.add(httpClientErrorException + message.getTargetComponentName());
+                errorHolder.addError(httpClientErrorException + message.getTargetComponentName());
             }
         }
     }
 
-    public ResponseEntity<String> returnAfterDELETE() {
-        if (errorHolder.isEmpty()) {
+    private ResponseEntity<String> returnAfterDELETE() throws JSONException {
+        if (errorHolder.getErrors().isEmpty()) {
             ResponseEntity<String> ret = new ResponseEntity<>(HttpStatus.OK);
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
             return ret;
         } else {
-            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder.toString()), HttpStatus.CONFLICT);
+            ResponseEntity<String> ret = new ResponseEntity(errorTargetReturnedError(errorHolder), HttpStatus.CONFLICT);
             errorHolder.clear();
             logger.info(returning + ret.getStatusCode() + "\n" + ret.getBody());
             logger.info(finish);
@@ -409,14 +389,8 @@ public class IMCService {
     }
 
     // Private methods for communication with other layers
-    private String shiftResourceIdsInJSON(String originalJSON, String resource, String sourceComponentName, String targetComponentName) {
-        try {
+    private String shiftResourceIdsInJSON(String originalJSON, String resource, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
             return jsonUtil.shiftResourceIdsInJSON(originalJSON, resource, sourceComponentName, targetComponentName);
-        } catch (Exception e) {
-            logger.error(errorWhileShiftingResourceIds, e);
-            errorHolder.add(errorWhileShiftingResourceIds(e));
-        }
-        return null;
     }
 
     private int getResourceIdInTarget(int sourceId, String resource, String sourceComponentName, String targetComponentName) {
@@ -428,23 +402,17 @@ public class IMCService {
             return jsonUtil.addResourceIdToJSON(originalJSON, componentName, idValue);
         } catch (Exception e) {
             logger.error(errorWhileAddingResourceId, e);
-            errorHolder.add(errorWhileAddingResourceId(e));
+            errorHolder.addError(errorWhileAddingResourceId(e));
         }
         return null;
     }
 
-    private String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) {
-        try {
+    private String shiftEnumIdsInJSON(String originalJSON, String resourceName, String sourceComponentName, String targetComponentName) throws JSONException, IOException {
             if (shouldBeMapped(targetComponentName)) {
                 return jsonUtil.shiftEnumIdsInJSON(originalJSON, resourceName, sourceComponentName, targetComponentName);
             } else {
                 return originalJSON;
             }
-        } catch (Exception e) {
-            logger.error(errorWhileShiftingEnumIds, e);
-            errorHolder.add(errorWhileShiftingEnumIds(e));
-        }
-        return null;
     }
 
     private void assureConsistentEnums(String originalJSON,
@@ -474,7 +442,15 @@ public class IMCService {
                 Message getRepresentation = new Message(nameGETAction, enume.getTableName(), sourceComponentName, null);
                 logger.info(sendingMessage + getRepresentation.getTargetComponentName() + "/"
                         + getRepresentation.getResourceName() + "/" + enumeSourceId + " [" + getRepresentation.getAction() + "]");
-                String enumTextRepresentation = sendMessage(getRepresentation, enumeSourceId).getBody();
+                ResponseEntity<String> response = sendMessage(getRepresentation, enumeSourceId);
+                String enumTextRepresentation;
+                if(response != null && response.hasBody()) {
+                    enumTextRepresentation = response.getBody();
+                }
+                else {
+                    enumTextRepresentation = "{\"id\":\"0\"}";
+                }
+                
                 logger.info(messageResponse + enumTextRepresentation);
 
                 // Posli ji do targetu
@@ -490,7 +466,7 @@ public class IMCService {
             }
         } catch (Exception e) {
             logger.error(errorWhileMappingEnums, e);
-            errorHolder.add(errorWhileMappingEnums(e));
+            errorHolder.addError(errorWhileMappingEnums(e));
         }
 
     }
@@ -503,14 +479,8 @@ public class IMCService {
         return resolver.getIdValue(e, targetComponentName) != 0;
     }
 
-    private String nullResourceIdInJSON(String originalJSON, String resourceIdName) {
-        try {
-            return jsonUtil.nullResourceIdInJSON(originalJSON, resourceIdName);
-        } catch (Exception e) {
-            logger.error(errorWhileDeletingResourceId, e);
-            errorHolder.add(errorWhileDeletingResourceId(e));
-        }
-        return null;
+    private String nullResourceIdInJSON(String originalJSON, String resourceIdName) throws JSONException {
+        return jsonUtil.nullResourceIdInJSON(originalJSON, resourceIdName);
     }
 
     private List<Message> parseMessages(String resourceName, String actionName) {
@@ -536,8 +506,12 @@ public class IMCService {
         return sender.sendMessage(message, body);
     }
 
-    private ResponseEntity<String> sendMessage(Message message, int id) throws ParserConfigurationException, SAXException, IOException {
-        return sender.sendMessage(message, id);
+    private ResponseEntity<String> sendMessage(Message message, int id) {
+        return sender.sendMessage(message, id, "");
+    }
+    
+    private ResponseEntity<String> sendMessage(Message message, int id, String body) {
+        return sender.sendMessage(message, id, body);
     }
 
     /*
@@ -562,6 +536,21 @@ public class IMCService {
             }
         }
         return false;
+    }
+    
+    private void saveMappedResource(MappedEntity entity, String resourceName) {
+        dao.create(entity, resourceName);
+    }
+    
+    
+    
+   private void deleteEntity(int id, String resourceTableName, String componentName) {
+        dao.delete(id, resourceTableName, componentName);
+        
+    }
+   
+   private void updateEntity(String resourceTableName, String setColumn, int setId, String whereColumn, int whereId) {
+        dao.update(resourceTableName, setColumn, setId, whereColumn, whereId);        
     }
     
     

@@ -5,18 +5,15 @@
 package philharmonic.utilities;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 import philharmonic.model.Message;
 import static philharmonic.resources.LoggingConstants.*;
 
@@ -33,36 +30,19 @@ public class MessagesParser {
     
     private static final Logger logger = Logger.getLogger(MessagesParser.class);
     
-    public MessagesParser(String path) throws ParserConfigurationException, SAXException, IOException {  
+    public MessagesParser(String path) {  
+        initialize(path);        
+    }
+
+    private void initialize(String path) {
         try {
             file = new File(path);
             dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             doc = dBuilder.parse(file);  
         }
-        catch(IOException e) {
-            initialize("../" + path, 0);
-        }
-        
-    }
-
-    private void initialize(String docPath, int depth) {
-        try {
-            file = new File(docPath);
-            dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            doc = dBuilder.parse(file);
-        }
-        catch (IOException e) {
-            if(depth < 5)
-                initialize("../" + docPath, ++depth);
-            else {
-                logger.error(exceptionThrown + "While initializing MessagesParser - cannot find \n" + docPath);
-                
-            }
-        }
-        catch (ParserConfigurationException | SAXException e) {
-            logger.error(exceptionThrown + "While initializing messages parser\n" + e.getMessage());
-        }
-        
+        catch(Exception e) {
+            logger.error(exceptionThrown + "While initializing MessagesParser - either cannot find \n" + path + " or there is some problem with the file.");
+        }    
     }
 
     public List<Message> getRequiredMessagesFor(String resourceName, String actionName) {
@@ -93,11 +73,11 @@ public class MessagesParser {
     }
 
     private Node getFirstElementByAttributeName(NodeList list, String nameValue) {
-        // TODO: check not first attribute but attribute according its name
         for (int i = 0; i < list.getLength(); i++) {
             Node tempNode = list.item(i);
             if (tempNode.getNodeType() == Node.ELEMENT_NODE) {
-                if (tempNode.getAttributes().item(0).getTextContent().equalsIgnoreCase(nameValue)) {
+                Element tempElement = (Element) tempNode;
+                if (tempElement.getAttribute("name").equalsIgnoreCase(nameValue)) {
                     return tempNode;
                 }
             }
@@ -113,7 +93,7 @@ public class MessagesParser {
     }
     
     public void setFilePath(String filePath) {
-        initialize(filePath, 0);
+        initialize(filePath);
     }
 
 }

@@ -92,7 +92,6 @@ public class MessageParserTest {
         assertEquals(0, message0.getNeededIds().size());
         
         Mockito.verifyZeroInteractions(loggerMock);
-    }
-    
+    }   
     
 }

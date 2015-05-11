@@ -6,7 +6,6 @@
 package philharmonic.utilities;
 
 import java.io.IOException;
-import java.util.List;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
@@ -94,19 +93,6 @@ public class JsonUtil {
         }
         return jo.toString();
     }
-
-//    public String deleteEnumIdsFromJSON(String originalJSON, String resourceName)
-//            throws JSONException, IOException {
-//        JSONObject jo = new JSONObject(originalJSON);
-//        for (Enum enume : getMappedEnums(resourceName)) {
-//            JsonNode stringId = mapper.readTree(originalJSON).findValue(enume.getIdName());
-//            if (stringId == null) {
-//                continue;
-//            }
-//            jo.remove(enume.getIdName());
-//        }
-//        return jo.toString();
-//    }
 
     /*
      * Remove original ID from JSON and put there ID 0 instead

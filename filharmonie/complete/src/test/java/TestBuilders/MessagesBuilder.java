@@ -10,12 +10,12 @@ import java.util.List;
 import philharmonic.model.Message;
 import static philharmonic.resources.StringConstants.*;
 
-
 /**
  *
  * @author Kookie
  */
 public class MessagesBuilder {
+
     String action;
     String resourceName;
     String targetComponentName;
@@ -24,20 +24,18 @@ public class MessagesBuilder {
     public Message build() {
         return new Message(action, resourceName, targetComponentName, neededIds);
     }
-    
+
     public List<Message> buildSampleMessages(String resource, String action) {
-        switch(resource) {
+        switch (resource) {
             case (CPAction):
                 return buildSampleMessagesForCPAction(action);
-            case (Item):
-                return buildSampleMessagesForItem(action);
         }
         return null;
     }
-    
+
     private List<Message> buildSampleMessagesForCPAction(String action) {
         List<Message> messages = new ArrayList<>();
-        // will be sending two messages - to rudolf and to orchestr
+        // will be sending two messages - to rudolf and to ticketing
         messages.add(new MessagesBuilder()
                 .withAction(action)
                 .withNeededIds(null)
@@ -50,49 +48,29 @@ public class MessagesBuilder {
                 .withAction(action)
                 .withNeededIds(neededIds)
                 .withResourceName(CPAction)
-                .withTargetComponentName(orchestrComponentName)
-                .build());
-        return messages;
-    }
-    
-    private List<Message> buildSampleMessagesForItem(String action) {
-        List<Message> messages = new ArrayList<>();
-        // will be sending two messages - to ticketing and to orchestr
-        messages.add(new MessagesBuilder()
-                .withAction(action)
-                .withNeededIds(null)
-                .withResourceName(Item)
                 .withTargetComponentName(ticketingComponentName)
                 .build());
-        List<String> neededIds = new ArrayList<>();
-        neededIds.add(ticketingComponentName);
-        messages.add(new MessagesBuilder()
-                .withAction(action)
-                .withNeededIds(neededIds)
-                .withResourceName(Item)
-                .withTargetComponentName(orchestrComponentName)
-                .build());
         return messages;
     }
-    
-    public MessagesBuilder withAction(String action) {
+
+    private MessagesBuilder withAction(String action) {
         this.action = action;
         return this;
     }
-    
-    public MessagesBuilder withResourceName(String resourceName) {
+
+    private MessagesBuilder withResourceName(String resourceName) {
         this.resourceName = resourceName;
         return this;
     }
-    
-    public MessagesBuilder withTargetComponentName(String targetComponentName) {
+
+    private MessagesBuilder withTargetComponentName(String targetComponentName) {
         this.targetComponentName = targetComponentName;
         return this;
     }
-    
-public MessagesBuilder withNeededIds(List<String> neededIds) {
+
+    private MessagesBuilder withNeededIds(List<String> neededIds) {
         this.neededIds = neededIds;
         return this;
     }
-    
+
 }

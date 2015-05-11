@@ -24,7 +24,8 @@ public class EnumMapping {
 
     // Intersystem mapping enums
     public static List<Enum> getMappedEnums(String resourceName) {
-
+        if(resourceName == null)
+            return new ArrayList();
         switch (resourceName) {
             case "CPAction":
                 return new ArrayList<Enum>() {

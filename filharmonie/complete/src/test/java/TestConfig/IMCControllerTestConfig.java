@@ -11,7 +11,9 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import philharmonic.controller.IMCController;
 import philharmonic.dao.IDao;
 import philharmonic.dao.IDaoImpl;
 import philharmonic.utilities.AddressesParser;
@@ -26,50 +28,59 @@ import philharmonic.utilities.MessagesParser;
  */
 @Configuration
 public class IMCControllerTestConfig extends WebMvcConfigurerAdapter {
-         
+
     @Bean
     public IMCService imcService() {
         return Mockito.mock(IMCService.class);
-    }  
-    
-        @Bean
+    }
+
+    @Bean
     public IDao Dao() {
         return Mockito.mock(IDaoImpl.class);
     }
-    
-    
+
     @Bean
     public DataSource dataSource() {
         return Mockito.mock(DriverManagerDataSource.class);
     }
-    
+
     @Bean
     public JdbcTemplate jt() {
-        return Mockito.mock(JdbcTemplate.class); 
+        return Mockito.mock(JdbcTemplate.class);
     }
-    
+
     @Bean
     public MappedEntityIdResolver resolver() {
-        return new MappedEntityIdResolver();      
+        return new MappedEntityIdResolver();
     }
-    
+
     @Bean
     public MessagesParser parser() {
         return Mockito.mock(MessagesParser.class);
     }
-     
+
     @Bean
     public AddressesParser AddressesParser() throws Exception {
         return Mockito.mock(AddressesParser.class);
     }
-    
+
     @Bean
     public MessageSender sender() {
         return Mockito.mock(MessageSender.class);
     }
-        
+    
+        @Bean
+    public RestTemplate rt() {
+        return Mockito.mock(RestTemplate.class);
+    }
+
     @Bean
     public JsonUtil jsonUtil() {
         return Mockito.mock(JsonUtil.class);
+    }
+    
+    @Bean
+    public IMCController imcController() {
+        return new IMCController();
     }
 }

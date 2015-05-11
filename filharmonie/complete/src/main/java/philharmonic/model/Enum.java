@@ -16,26 +16,14 @@ public class Enum {
         this.tableName = tableName;
         this.idName = idName;
         
-    }
-
-    public Enum() {
-    }
-    
+    }    
     
     public String getIdName() {
         return idName;
     }
 
-    public void setIdName(String idName) {
-        this.idName = idName;
-    }
-
     public String getTableName() {
         return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
     }
     
     

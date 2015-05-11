@@ -32,13 +32,8 @@ public class MappedEntity {
     
     @Override
     public boolean equals(Object o) {
-        try {
             MappedEntity me = (MappedEntity) o;
             return hashCode() == me.hashCode();
-        }
-        catch (Exception e) {
-            return false;
-        }
     }
     
     

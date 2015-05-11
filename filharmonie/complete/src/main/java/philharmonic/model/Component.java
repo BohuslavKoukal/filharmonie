@@ -13,9 +13,6 @@ public class Component {
     String componentName;
     String idName;
 
-    public Component() {
-    }
-
     public Component(String componentName, String idName) {
         this.componentName = componentName;
         this.idName = idName;
@@ -27,15 +24,5 @@ public class Component {
 
     public String getIdName() {
         return idName;
-    }
-
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
-    }
-
-    public void setIdName(String idName) {
-        this.idName = idName;
-    }
-    
-    
+    }    
 }

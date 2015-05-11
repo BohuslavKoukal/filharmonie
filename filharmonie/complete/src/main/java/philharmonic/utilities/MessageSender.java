@@ -22,14 +22,14 @@ import static philharmonic.resources.StringConstants.*;
  */
 public class MessageSender {
 
-    
+    @Autowired
     private RestTemplate rt;
     
     @Autowired
     private AddressesParser parser;
     
     public MessageSender() {
-        rt = new RestTemplate();
+        //rt = new RestTemplate();
     }
 
     public ResponseEntity<String> sendMessage(Message message, String body) {
@@ -48,13 +48,13 @@ public class MessageSender {
 
         return null;
     }
-
-    public ResponseEntity<String> sendMessage(Message message, int id) {
+    
+    public ResponseEntity<String> sendMessage(Message message, int id, String body) {
         String target = message.getTargetComponentName();
         String URI;
         URI = parser.getAddressForComponent(target)
                 + "/" + target + "/" + message.getResourceName() + "/" + id;
-        HttpEntity entity = new HttpEntity(createHeaders(target));
+        HttpEntity entity = new HttpEntity(body, createHeaders(target));
         if (message.getAction().equals(nameDELETEAction)) {
             return rt.exchange(URI, HttpMethod.DELETE, entity, String.class);
         }
@@ -66,11 +66,14 @@ public class MessageSender {
     
     private MultiValueMap createHeaders(String component) {
         String plainCreds = parser.getAuthorizationForComponent(component);
-        byte[] plainCredsBytes = plainCreds.getBytes();
-        byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
-        String base64Creds = new String(base64CredsBytes);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Basic " + base64Creds);
-        return headers;
+        if(plainCreds != null && !plainCreds.isEmpty()) {
+            byte[] plainCredsBytes = plainCreds.getBytes();
+            byte[] base64CredsBytes = Base64.encodeBase64(plainCredsBytes);
+            String base64Creds = new String(base64CredsBytes);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Basic " + base64Creds);
+            return headers;
+        }
+        return null;
     }
 }

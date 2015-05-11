@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.web.client.RestTemplate;
-import philharmonic.controller.IMCController;
 import philharmonic.dao.IDao;
 import philharmonic.dao.IDaoImpl;
 import philharmonic.service.IMCService;
@@ -72,6 +71,11 @@ public class ServiceTestConfig {
     @Bean
     public JsonUtil jsonUtil() {
         return Mockito.mock(JsonUtil.class);
+    }
+    
+        @Bean
+    public RestTemplate rt() {
+        return Mockito.mock(RestTemplate.class);
     }
 
 }

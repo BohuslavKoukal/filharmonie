@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.web.client.RestTemplate;
 import philharmonic.dao.IDao;
 import philharmonic.dao.IDaoImpl;
 import philharmonic.utilities.AddressesParser;
@@ -75,6 +76,11 @@ public class JsonUtilTestConfig {
 @Bean
     public MessageSender sender() {
         return Mockito.mock(MessageSender.class);
+    }
+    
+        @Bean
+    public RestTemplate rt() {
+        return Mockito.mock(RestTemplate.class);
     }
     
 }
